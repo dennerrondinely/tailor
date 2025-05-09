@@ -1,95 +1,136 @@
 import React from 'react';
 import { createElement, createNested } from './index';
 
-// Definir estilos aninhados para artigos
-const articleNested = createNested({
-  h1: 'text-4xl mb-8 mt-12',
-  h2: 'text-3xl mb-6 mt-10',
-  h3: 'text-2xl mb-4 mt-8',
-  p: 'text-lg leading-7 mb-6',
-  'p>a': 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-300',
-  strong: 'text-text-primary font-semibold',
-  ul: 'my-6 space-y-2',
-  ol: 'my-6 space-y-2',
-  li: 'text-lg leading-7 marker:text-text-secondary',
-  'li>p': 'my-2',
-  'li>ul': 'my-2',
-  'li>ol': 'my-2',
-  blockquote: 'border-l-4 border-link pl-4 italic',
-  pre: 'p-4',
-  code: 'text-sm font-mono bg-background-secondary px-1.5 py-0.5 rounded before:content-none after:content-none',
-  img: 'rounded-lg shadow-lg',
-  hr: 'my-8 border-border',
-  'hr+*': 'mt-8',
-});
-
-// Criar componente de artigo
-const Article = createElement('article')({
-  root: 'prose prose-slate dark:prose-invert max-w-none prose-headings:scroll-mt-20 prose-headings:font-display prose-headings:font-bold prose-a:text-link hover:prose-a:text-link/80 prose-pre:bg-background-secondary prose-pre:border prose-pre:border-border',
-  hover: '',
-  nested: articleNested,
-});
-
-// Criar componentes de botão com variantes
-const buttonBase = {
+// Button with responsive styles
+const Button = createElement('button')({
   root: 'px-4 py-2 rounded-md font-medium transition-colors',
-  focus: 'ring-2 ring-offset-2',
-};
-
-const PrimaryButton = createElement('button')({
-  ...buttonBase,
-  root: `${buttonBase.root} bg-blue-500 text-white`,
   hover: 'bg-blue-600',
   active: 'bg-blue-700',
-  disabled: 'bg-blue-300 cursor-not-allowed',
+  focus: 'ring-2 ring-offset-2',
+  disabled: 'opacity-50 cursor-not-allowed',
+  responsive: {
+    root: {
+      sm: 'px-2 py-1 text-sm',
+      md: 'px-4 py-2 text-base',
+      lg: 'px-6 py-3 text-lg',
+    },
+    hover: {
+      sm: 'bg-blue-500',
+      md: 'bg-blue-600',
+      lg: 'bg-blue-700',
+    }
+  }
 });
 
-const SecondaryButton = createElement('button')({
-  ...buttonBase,
-  root: `${buttonBase.root} bg-gray-200 text-gray-800`,
-  hover: 'bg-gray-300',
-  active: 'bg-gray-400',
-  disabled: 'bg-gray-100 text-gray-400 cursor-not-allowed',
+// Card with responsive styles
+const Card = createElement('div')({
+  root: 'bg-white rounded-lg shadow',
+  responsive: {
+    root: {
+      sm: 'p-2',
+      md: 'p-4',
+      lg: 'p-6',
+      xl: 'p-8',
+    },
+    hover: {
+      sm: 'shadow-md',
+      md: 'shadow-lg',
+      lg: 'shadow-xl',
+    }
+  }
 });
 
-// Exemplo de uso
+// Navigation with responsive styles
+const Nav = createElement('nav')({
+  root: 'bg-gray-800 text-white',
+  responsive: {
+    root: {
+      sm: 'p-2',
+      md: 'p-4',
+      lg: 'p-6',
+    }
+  }
+});
+
+const NavItem = createElement('a')({
+  root: 'text-gray-300 hover:text-white',
+  hover: 'text-white',
+  responsive: {
+    root: {
+      sm: 'text-sm px-2',
+      md: 'text-base px-4',
+      lg: 'text-lg px-6',
+    }
+  }
+});
+
+// Grid with responsive styles
+const Grid = createElement('div')({
+  root: 'grid gap-4',
+  responsive: {
+    root: {
+      sm: 'grid-cols-1',
+      md: 'grid-cols-2',
+      lg: 'grid-cols-3',
+      xl: 'grid-cols-4',
+    }
+  }
+});
+
+// Article with nested and responsive styles
+const articleNested = createNested({
+  h1: 'font-bold mb-4',
+  h2: 'font-semibold mb-3',
+  p: 'mb-2',
+  'p>a': 'text-blue-500 hover:text-blue-600',
+});
+
+const Article = createElement('article')({
+  root: 'prose max-w-none',
+  nested: articleNested,
+  responsive: {
+    root: {
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
+    }
+  }
+});
+
+// Example usage
 export function Example() {
   return (
-    <div className="p-8">
-      <Article>
-        <h1>Título Principal</h1>
-        <p>
-          Este é um parágrafo com <a href="#">um link</a> e <strong>texto em negrito</strong>.
-        </p>
-        <h2>Subtítulo</h2>
-        <ul>
-          <li>Item 1</li>
-          <li>
-            Item 2
-            <p>Com parágrafo aninhado</p>
-            <ul>
-              <li>Subitem 1</li>
-              <li>Subitem 2</li>
-            </ul>
-          </li>
-        </ul>
-        <blockquote>
-          Esta é uma citação que demonstra o estilo de blockquote.
-        </blockquote>
-        <pre>
-          <code>
-            // Exemplo de código
-            const x = 42;
-          </code>
-        </pre>
-        <hr />
-        <p>Conteúdo após a linha horizontal</p>
-        <div className="flex gap-4 mt-8">
-          <PrimaryButton>Botão Primário</PrimaryButton>
-          <SecondaryButton>Botão Secundário</SecondaryButton>
-          <PrimaryButton disabled>Botão Desabilitado</PrimaryButton>
+    <div className="min-h-screen bg-gray-100">
+      <Nav>
+        <div className="flex space-x-4">
+          <NavItem href="#">Home</NavItem>
+          <NavItem href="#">About</NavItem>
+          <NavItem href="#">Contact</NavItem>
         </div>
-      </Article>
+      </Nav>
+
+      <main className="container mx-auto p-4">
+        <Grid>
+          <Card>
+            <h2 className="text-xl font-bold mb-4">Card Title</h2>
+            <p className="mb-4">This is a responsive card that adapts to different screen sizes.</p>
+            <Button>Click me</Button>
+          </Card>
+
+          <Card>
+            <h2 className="text-xl font-bold mb-4">Another Card</h2>
+            <p className="mb-4">Cards in the grid will reflow based on screen size.</p>
+            <Button disabled>Disabled Button</Button>
+          </Card>
+
+          <Article>
+            <h1>Article Title</h1>
+            <p>This is a paragraph with a <a href="#">link</a>.</p>
+            <h2>Subtitle</h2>
+            <p>Another paragraph with more content.</p>
+          </Article>
+        </Grid>
+      </main>
     </div>
   );
 } 

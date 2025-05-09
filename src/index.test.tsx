@@ -1,108 +1,173 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import tailor from './index';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { createElement, createNested } from './index';
 
-describe('tailor', () => {
+describe('Tailor', () => {
   it('should create a component with basic styles', () => {
-    const Button = tailor('button', {
-      spacing: {
-        padding: '4',
-      },
-      background: {
-        color: 'blue-500',
-      },
+    const Button = createElement('button')({
+      root: 'px-4 py-2',
+      hover: 'bg-blue-500',
     });
 
-    const { container } = render(<Button>Test Button</Button>);
-    const button = container.firstChild as HTMLElement;
-
-    expect(button.tagName.toLowerCase()).toBe('button');
-    expect(button.className).toContain('p-4');
-    expect(button.className).toContain('bg-blue-500');
+    render(<Button>Click me</Button>);
+    const button = screen.getByText('Click me');
+    expect(button).toHaveClass('px-4 py-2');
+    expect(button).toHaveClass('hover:bg-blue-500');
   });
 
-  it('should merge custom className with generated styles', () => {
-    const Div = tailor('div', {
-      spacing: {
-        margin: '4',
-      },
+  it('should merge custom class names', () => {
+    const Button = createElement('button')({
+      root: 'px-4 py-2',
     });
 
-    const { container } = render(<Div className="custom-class">Test Div</Div>);
-    const div = container.firstChild as HTMLElement;
-
-    expect(div.className).toContain('m-4');
-    expect(div.className).toContain('custom-class');
+    render(<Button className="custom-class">Click me</Button>);
+    const button = screen.getByText('Click me');
+    expect(button).toHaveClass('px-4 py-2');
+    expect(button).toHaveClass('custom-class');
   });
 
   it('should handle all style categories', () => {
-    const ComplexComponent = tailor('div', {
-      spacing: {
-        padding: '4',
-        margin: '2',
-      },
-      layout: {
-        display: 'flex',
-        width: 'full',
-      },
-      typography: {
-        fontSize: 'lg',
-        fontWeight: 'bold',
-        textColor: 'gray-800',
-      },
-      background: {
-        color: 'white',
-        opacity: '90',
-      },
-      border: {
-        width: '1',
-        color: 'gray-200',
-        radius: 'md',
-      },
-      flex: {
-        direction: 'row',
-        justify: 'between',
-        align: 'center',
-      },
-      grid: {
-        cols: '3',
-        gap: '4',
-      },
+    const Button = createElement('button')({
+      root: 'base',
+      hover: 'hover',
+      active: 'active',
+      focus: 'focus',
+      disabled: 'disabled',
     });
 
-    const { container } = render(<ComplexComponent>Complex Component</ComplexComponent>);
-    const component = container.firstChild as HTMLElement;
+    render(<Button disabled>Click me</Button>);
+    const button = screen.getByText('Click me');
+    expect(button).toHaveClass('base');
+    expect(button).toHaveClass('hover:hover');
+    expect(button).toHaveClass('active:active');
+    expect(button).toHaveClass('focus:focus');
+    expect(button).toHaveClass('disabled:disabled');
+  });
 
-    expect(component.className).toContain('p-4');
-    expect(component.className).toContain('m-2');
-    expect(component.className).toContain('flex');
-    expect(component.className).toContain('w-full');
-    expect(component.className).toContain('text-lg');
-    expect(component.className).toContain('font-bold');
-    expect(component.className).toContain('text-gray-800');
-    expect(component.className).toContain('bg-white');
-    expect(component.className).toContain('opacity-90');
-    expect(component.className).toContain('border-1');
-    expect(component.className).toContain('border-gray-200');
-    expect(component.className).toContain('rounded-md');
-    expect(component.className).toContain('flex-row');
-    expect(component.className).toContain('justify-between');
-    expect(component.className).toContain('items-center');
-    expect(component.className).toContain('grid-cols-3');
-    expect(component.className).toContain('gap-4');
+  it('should handle nested styles', () => {
+    const nested = createNested({
+      h1: 'text-4xl',
+      p: 'text-lg',
+      'p>a': 'text-blue-500',
+    });
+
+    const Article = createElement('article')({
+      root: 'prose',
+      nested,
+    });
+
+    render(
+      <Article>
+        <h1>Title</h1>
+        <p>Text with <a href="#">link</a></p>
+      </Article>
+    );
+
+    const title = screen.getByText('Title');
+    const paragraph = screen.getByText('Text with');
+    const link = screen.getByText('link');
+
+    expect(title).toHaveClass('text-4xl');
+    expect(paragraph).toHaveClass('text-lg');
+    expect(link).toHaveClass('text-blue-500');
+  });
+
+  it('should handle responsive styles', () => {
+    const Card = createElement('div')({
+      root: 'base',
+      responsive: {
+        root: {
+          sm: 'sm-base',
+          md: 'md-base',
+          lg: 'lg-base',
+        },
+        hover: {
+          sm: 'sm-hover',
+          md: 'md-hover',
+          lg: 'lg-hover',
+        }
+      }
+    });
+
+    render(<Card>Content</Card>);
+    const card = screen.getByText('Content');
+
+    // Base classes
+    expect(card).toHaveClass('base');
+
+    // Responsive classes
+    expect(card).toHaveClass('sm:sm-base');
+    expect(card).toHaveClass('md:md-base');
+    expect(card).toHaveClass('lg:lg-base');
+
+    // Responsive hover classes
+    expect(card).toHaveClass('sm:hover:sm-hover');
+    expect(card).toHaveClass('md:hover:md-hover');
+    expect(card).toHaveClass('lg:hover:lg-hover');
+  });
+
+  it('should handle all responsive states', () => {
+    const Button = createElement('button')({
+      root: 'base',
+      responsive: {
+        root: {
+          sm: 'sm-base',
+          md: 'md-base',
+        },
+        hover: {
+          sm: 'sm-hover',
+          md: 'md-hover',
+        },
+        active: {
+          sm: 'sm-active',
+          md: 'md-active',
+        },
+        focus: {
+          sm: 'sm-focus',
+          md: 'md-focus',
+        },
+        disabled: {
+          sm: 'sm-disabled',
+          md: 'md-disabled',
+        }
+      }
+    });
+
+    render(<Button disabled>Click me</Button>);
+    const button = screen.getByText('Click me');
+
+    // Base classes
+    expect(button).toHaveClass('base');
+
+    // Root responsive classes
+    expect(button).toHaveClass('sm:sm-base');
+    expect(button).toHaveClass('md:md-base');
+
+    // Hover responsive classes
+    expect(button).toHaveClass('sm:hover:sm-hover');
+    expect(button).toHaveClass('md:hover:md-hover');
+
+    // Active responsive classes
+    expect(button).toHaveClass('sm:active:sm-active');
+    expect(button).toHaveClass('md:active:md-active');
+
+    // Focus responsive classes
+    expect(button).toHaveClass('sm:focus:sm-focus');
+    expect(button).toHaveClass('md:focus:md-focus');
+
+    // Disabled responsive classes
+    expect(button).toHaveClass('sm:disabled:sm-disabled');
+    expect(button).toHaveClass('md:disabled:md-disabled');
   });
 
   it('should forward refs correctly', () => {
-    const Button = tailor('button', {
-      spacing: {
-        padding: '4',
-      },
+    const Button = createElement('button')({
+      root: 'px-4 py-2',
     });
 
     const ref = React.createRef<HTMLButtonElement>();
-    render(<Button ref={ref}>Test Button</Button>);
-
-    expect(ref.current).toBeTruthy();
-    expect(ref.current?.tagName.toLowerCase()).toBe('button');
+    render(<Button ref={ref}>Click me</Button>);
+    expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
 }); 

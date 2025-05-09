@@ -9,12 +9,27 @@ type NestedStyles = {
   [selector: string]: string;
 };
 
+type ResponsiveConfig = {
+  sm?: string;
+  md?: string;
+  lg?: string;
+  xl?: string;
+  '2xl'?: string;
+};
+
 type ElementConfig = {
   root?: string;
   hover?: string;
   active?: string;
   focus?: string;
   disabled?: string;
+  responsive?: {
+    root?: ResponsiveConfig;
+    hover?: ResponsiveConfig;
+    active?: ResponsiveConfig;
+    focus?: ResponsiveConfig;
+    disabled?: ResponsiveConfig;
+  };
   nested?: NestedStyles;
 };
 
@@ -32,9 +47,25 @@ export function createNested(styles: NestedStyles) {
   return styles;
 }
 
+function buildResponsiveClasses(config: ResponsiveConfig | undefined, prefix: string = ''): string[] {
+  if (!config) return [];
+  
+  const classes: string[] = [];
+  const breakpoints = ['sm', 'md', 'lg', 'xl', '2xl'] as const;
+
+  breakpoints.forEach(breakpoint => {
+    if (config[breakpoint]) {
+      classes.push(`${breakpoint}:${prefix}${config[breakpoint]}`);
+    }
+  });
+
+  return classes;
+}
+
 function buildClassName(config: ElementConfig): string {
   const classes: string[] = [];
 
+  // Base classes
   if (config.root) {
     classes.push(config.root);
   }
@@ -53,6 +84,26 @@ function buildClassName(config: ElementConfig): string {
 
   if (config.disabled) {
     classes.push(`disabled:${config.disabled}`);
+  }
+
+  // Responsive classes
+  if (config.responsive) {
+    const { root, hover, active, focus, disabled } = config.responsive;
+
+    // Root responsive classes
+    classes.push(...buildResponsiveClasses(root));
+
+    // Hover responsive classes
+    classes.push(...buildResponsiveClasses(hover, 'hover:'));
+
+    // Active responsive classes
+    classes.push(...buildResponsiveClasses(active, 'active:'));
+
+    // Focus responsive classes
+    classes.push(...buildResponsiveClasses(focus, 'focus:'));
+
+    // Disabled responsive classes
+    classes.push(...buildResponsiveClasses(disabled, 'disabled:'));
   }
 
   return classes.join(' ');
