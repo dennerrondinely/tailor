@@ -26,6 +26,7 @@
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@types/jest": "^29.5.12",
@@ -37,4 +38,4 @@
     "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   }
-} 
+}

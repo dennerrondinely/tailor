@@ -86,23 +86,18 @@ function buildClassName(config: ElementConfig): string {
     classes.push(`disabled:${config.disabled}`);
   }
 
-  // Responsive classes
+  
   if (config.responsive) {
     const { root, hover, active, focus, disabled } = config.responsive;
 
-    // Root responsive classes
     classes.push(...buildResponsiveClasses(root));
 
-    // Hover responsive classes
     classes.push(...buildResponsiveClasses(hover, 'hover:'));
 
-    // Active responsive classes
     classes.push(...buildResponsiveClasses(active, 'active:'));
 
-    // Focus responsive classes
     classes.push(...buildResponsiveClasses(focus, 'focus:'));
 
-    // Disabled responsive classes
     classes.push(...buildResponsiveClasses(disabled, 'disabled:'));
   }
 
