@@ -1,20 +1,20 @@
 # Tailor
 
-Uma biblioteca para criar componentes React estilizados com Tailwind CSS de forma organizada e tipada, com suporte a estilos aninhados e variantes.
+A library for creating styled React components with Tailwind CSS in an organized and typed way, with support for nested styles and variants.
 
-## Instalação
+## Installation
 
 ```bash
 npm install tailor
-# ou
+# or
 yarn add tailor
-# ou
+# or
 pnpm add tailor
 ```
 
-## Uso
+## Usage
 
-### Criando Componentes Básicos
+### Creating Basic Components
 
 ```tsx
 import { createElement } from 'tailor';
@@ -27,22 +27,22 @@ const Button = createElement('button')({
   disabled: 'opacity-50 cursor-not-allowed',
 });
 
-// Uso
+// Usage
 function App() {
   return (
-    <Button onClick={() => alert('Clicado!')}>
-      Clique aqui
+    <Button onClick={() => alert('Clicked!')}>
+      Click me
     </Button>
   );
 }
 ```
 
-### Estilos Aninhados
+### Nested Styles
 
 ```tsx
 import { createElement, createNested } from 'tailor';
 
-// Definir estilos para elementos aninhados
+// Define styles for nested elements
 const articleNested = createNested({
   h1: 'text-4xl mb-8',
   h2: 'text-3xl mb-6',
@@ -52,21 +52,21 @@ const articleNested = createNested({
   'li>p': 'mb-2',
 });
 
-// Criar componente com estilos aninhados
+// Create component with nested styles
 const Article = createElement('article')({
   root: 'prose max-w-none',
   nested: articleNested,
 });
 
-// Uso
+// Usage
 function BlogPost() {
   return (
     <Article>
-      <h1>Título</h1>
-      <p>Texto com <a href="#">link</a></p>
+      <h1>Title</h1>
+      <p>Text with <a href="#">link</a></p>
       <ul>
         <li>
-          <p>Item com parágrafo</p>
+          <p>Item with paragraph</p>
         </li>
       </ul>
     </Article>
@@ -74,7 +74,7 @@ function BlogPost() {
 }
 ```
 
-### Variantes de Componentes
+### Component Variants
 
 ```tsx
 const buttonBase = {
@@ -103,72 +103,42 @@ const SecondaryButton = createElement('button')({
 
 ### createElement(tag)
 
-Cria um componente React estilizado com Tailwind.
+Creates a styled React component with Tailwind.
 
-- `tag`: Tag HTML do elemento (ex: 'div', 'button', etc)
-- Retorna uma função que aceita um objeto de configuração:
-  - `root`: Classes base do elemento
-  - `hover`: Classes aplicadas no hover
-  - `active`: Classes aplicadas no active
-  - `focus`: Classes aplicadas no focus
-  - `disabled`: Classes aplicadas quando disabled
-  - `nested`: Objeto com estilos para elementos aninhados
+- `tag`: HTML element tag (e.g., 'div', 'button', etc.)
+- Returns a function that accepts a configuration object:
+  - `root`: Base element classes
+  - `hover`: Classes applied on hover
+  - `active`: Classes applied on active
+  - `focus`: Classes applied on focus
+  - `disabled`: Classes applied when disabled
+  - `nested`: Object with styles for nested elements
 
 ### createNested(styles)
 
-Cria um objeto de estilos aninhados.
+Creates a nested styles object.
 
-- `styles`: Objeto com seletores e suas classes
-  - Chaves podem ser tags HTML ou seletores combinados (ex: 'p>a', 'li>p')
-  - Valores são strings com classes Tailwind
+- `styles`: Object with selectors and their classes
+  - Keys can be HTML tags or combined selectors (e.g., 'p>a', 'li>p')
+  - Values are strings with Tailwind classes
 
-## Configurações Disponíveis
+## Features
 
-A função `tailor` aceita dois parâmetros:
-1. O nome da tag HTML
-2. Um objeto de configuração com as seguintes opções:
+- **Type Safety**: Full TypeScript support with proper type definitions
+- **Nested Styles**: Support for styling nested elements with complex selectors
+- **Component Variants**: Easy creation of component variants with shared base styles
+- **Smart Class Merging**: Uses `tailwind-merge` for intelligent class conflict resolution
+- **State Support**: Built-in support for hover, active, focus, and disabled states
+- **React Integration**: Seamless integration with React components and props
 
-### Espaçamento (spacing)
-- `padding`: Define o padding do elemento
-- `margin`: Define a margem do elemento
+## TypeScript
 
-### Layout
-- `display`: Define a propriedade display
-- `position`: Define a posição do elemento
-- `width`: Define a largura
-- `height`: Define a altura
+The library is fully typed and provides autocompletion for all available properties.
 
-### Tipografia (typography)
-- `fontSize`: Define o tamanho da fonte
-- `fontWeight`: Define o peso da fonte
-- `textColor`: Define a cor do texto
+## Contributing
 
-### Fundo (background)
-- `color`: Define a cor de fundo
-- `opacity`: Define a opacidade
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Borda (border)
-- `width`: Define a largura da borda
-- `color`: Define a cor da borda
-- `radius`: Define o raio da borda
+## License
 
-### Flex
-- `direction`: Define a direção do flex
-- `wrap`: Define o wrap do flex
-- `justify`: Define o justify-content
-- `align`: Define o align-items
-- `grow`: Define o flex-grow
-- `shrink`: Define o flex-shrink
-
-### Grid
-- `cols`: Define o número de colunas
-- `rows`: Define o número de linhas
-- `gap`: Define o espaçamento entre os itens
-
-## Typescript
-
-A biblioteca é totalmente tipada e oferece autocompleção para todas as propriedades disponíveis.
-
-## Contribuindo
-
-Contribuições são bem-vindas! Por favor, abra uma issue ou pull request. 
+MIT 
