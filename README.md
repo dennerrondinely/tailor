@@ -1,7 +1,7 @@
-# <img src="images/logo.png" alt="Tailor" height="40"/>
+# <img src="images/icon.png" alt="Tailor" height="40"/>
 
 <div align="center">
-  <img src="images/icon.png" alt="Tailor Icon" width="120" style="margin-bottom: 20px"/>
+  <img src="images/logo.png" alt="Tailor Logo" width="300" style="margin-bottom: 20px"/>
   <br/>
   <p><strong>A library for creating styled React components with Tailwind CSS in an organized and typed way, with support for nested styles, variants, and responsive design.</strong></p>
   
@@ -154,7 +154,7 @@ The library is fully typed and provides autocompletion for all available propert
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 <div align="center" style="margin: 60px 0; padding: 40px; background: linear-gradient(to right, #f3f4f6, #e5e7eb, #f3f4f6); border-radius: 16px;">
-  <img src="images/logo.png" alt="Tailor" height="300" style="filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));"/>
+  <img src="images/icon.png" alt="Tailor" height="150" style="filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));"/>
   <br/>
   <p style="margin-top: 20px; font-size: 1.2em; color: #374151;">Crafted with ❤️ for React developers</p>
 </div>
