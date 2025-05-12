@@ -12,10 +12,6 @@ export const Article = craft('article')({
   base: 'prose max-w-none',
   nested: articleNested,
   responsive: {
-    base: {
-      sm: 'text-sm',
-      md: 'text-base',
-      lg: 'text-lg',
-    }
+    lg: "prose-lg"
   }
 }); 

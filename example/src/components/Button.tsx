@@ -12,15 +12,8 @@ const buttonBase = embroider({
 export const Button = craft('button')({
   ...buttonBase,
   responsive: {
-    base: {
-      sm: 'px-2 py-1 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
-    },
-    hover: {
-      sm: 'bg-blue-500',
-      md: 'bg-blue-600',
-      lg: 'bg-blue-700',
-    }
+    sm: 'px-2 py-1 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg',
   }
 }); 
