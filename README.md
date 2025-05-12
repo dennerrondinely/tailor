@@ -39,11 +39,23 @@ pnpm add @dennerrondinely/tailor
 import { createElement } from '@dennerrondinely/tailor';
 
 const Button = createElement('button')({
-  root: 'px-4 py-2 bg-blue-500 text-white rounded',
-  hover: 'hover:bg-blue-600',
-  active: 'active:bg-blue-700',
-  focus: 'focus:ring-2 focus:ring-blue-500',
-  disabled: 'disabled:opacity-50'
+  base: 'px-4 py-2 bg-blue-500 text-white rounded',
+  hover: 'bg-blue-600',
+  active: 'bg-blue-700',
+  focus: 'ring-2 ring-blue-500',
+  disabled: 'opacity-50',
+  responsive: {
+    base: {
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg'
+    },
+    hover: {
+      sm: 'bg-blue-400',
+      md: 'bg-blue-500',
+      lg: 'bg-blue-600'
+    }
+  }
 });
 
 // Usage
@@ -54,6 +66,29 @@ function App() {
     </Button>
   );
 }
+```
+
+### Using with Custom Components
+
+Você pode usar `createElement` ou `craft` com componentes React já existentes:
+
+```tsx
+import { craft } from '@dennerrondinely/tailor';
+
+const CustomButton = React.forwardRef((props, ref) => (
+  <button ref={ref} {...props} />
+));
+
+const StyledCustomButton = craft(CustomButton)({
+  base: 'px-4 py-2 rounded font-medium',
+  variants: {
+    hover: { default: 'hover:opacity-90' },
+    active: { default: 'active:scale-95' }
+  },
+  responsive: {
+    base: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' }
+  }
+});
 ```
 
 ## 📚 Documentation
@@ -76,7 +111,7 @@ const responsiveStyles = tailorFit({
 
 const Card = createElement('div')({
   responsive: {
-    root: responsiveStyles,
+    base: responsiveStyles,
     hover: tailorFit({
       sm: 'hover:shadow-md',
       md: 'hover:shadow-lg',
@@ -101,19 +136,9 @@ const cardStyles = embroider({
 });
 
 const Card = createElement('div')({
-  root: 'bg-white rounded-lg shadow p-6',
+  base: 'bg-white rounded-lg shadow p-6',
   nested: cardStyles
 });
-
-// Usage
-<Card>
-  <h2>Card Title</h2>
-  <p>Card content</p>
-  <button>Action</button>
-  <div>
-    <span>Additional info</span>
-  </div>
-</Card>
 ```
 
 #### spinThread
@@ -123,189 +148,98 @@ Add animations to your components:
 ```tsx
 import { spinThread } from '@dennerrondinely/tailor';
 
-// Loading spinner
 const Spinner = createElement('div')({
-  root: spinThread({
+  base: spinThread({
     type: 'spin',
     duration: '1000',
     iteration: 'infinite'
-  })
-});
-
-// Pulsing button
-const PulseButton = createElement('button')({
-  root: twMerge(
-    'px-4 py-2 bg-blue-500 text-white rounded',
-    spinThread({
-      type: 'pulse',
-      duration: '500',
-      iteration: 'infinite'
-    })
-  )
-});
-
-// Bouncing notification
-const Notification = createElement('div')({
-  root: spinThread({
-    type: 'bounce',
-    duration: '1000',
-    iteration: 'infinite',
-    direction: 'alternate'
   })
 });
 ```
 
 #### craft
 
-A powerful utility that combines all features in a single, intuitive API:
+A powerful utility that combines all features in a single, intuitive API. Agora aceita tanto string quanto componente React:
 
 ```tsx
 import { craft } from '@dennerrondinely/tailor';
 
 const Button = craft('button')({
-  // Base styles
   base: 'px-4 py-2 rounded font-medium',
-  
-  // Variants
   variants: {
-    hover: {
-      default: 'hover:bg-blue-600',
-      outline: 'hover:bg-blue-50'
-    },
-    active: {
-      default: 'active:bg-blue-700',
-      outline: 'active:bg-blue-100'
-    }
+    hover: { default: 'hover:bg-blue-600', outline: 'hover:bg-blue-50' },
+    active: { default: 'active:bg-blue-700', outline: 'active:bg-blue-100' }
   },
-  
-  // Responsive styles
   responsive: {
-    sm: {
-      base: 'text-sm',
-      hover: 'hover:bg-blue-500'
-    },
-    md: {
-      base: 'text-base',
-      hover: 'hover:bg-blue-600'
-    }
+    base: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' },
+    hover: { sm: 'hover:bg-blue-500', md: 'hover:bg-blue-600' }
   },
-  
-  // Nested styles
   nested: {
     'span': 'text-sm text-gray-500',
     'div > svg': 'w-4 h-4'
   },
-  
-  // Animation
   animation: {
     type: 'pulse',
     duration: '500',
     iteration: 'infinite'
   }
 });
-```
 
-### Combining Helpers
+// Exemplo com componente customizado
+const CustomButton = React.forwardRef((props, ref) => (
+  <button ref={ref} {...props} />
+));
 
-Here's an example of how to combine multiple helpers for a complex component:
-
-```tsx
-import { craft, tailorFit, embroider, spinThread } from '@dennerrondinely/tailor';
-
-// Reusable responsive styles
-const textSizes = tailorFit({
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg'
-});
-
-// Reusable nested styles
-const cardStyles = embroider({
-  'h2': 'text-xl font-bold mb-2',
-  'p': 'text-gray-600',
-  'button': 'mt-4 bg-blue-500 text-white px-4 py-2 rounded'
-});
-
-// Complex card component using craft
-const Card = craft('div')({
-  base: 'bg-white rounded-lg shadow p-6',
+const StyledCustomButton = craft(CustomButton)({
+  base: 'px-4 py-2 rounded font-medium',
   variants: {
-    hover: {
-      default: 'hover:shadow-lg',
-      interactive: 'hover:shadow-xl hover:-translate-y-1'
-    }
+    hover: { default: 'hover:opacity-90' },
+    active: { default: 'active:scale-95' }
   },
   responsive: {
-    sm: {
-      base: 'p-4',
-      hover: 'hover:shadow-md'
-    },
-    md: {
-      base: 'p-6',
-      hover: 'hover:shadow-lg'
-    }
-  },
-  nested: cardStyles,
-  animation: {
-    type: 'pulse',
-    duration: '1000',
-    iteration: 'infinite'
+    base: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' }
   }
 });
+```
+
+### Responsive Config
+
+A configuração responsiva agora segue o formato:
+
+```ts
+responsive: {
+  base?: { sm?: string; md?: string; ... };
+  hover?: { sm?: string; ... };
+  active?: { ... };
+  focus?: { ... };
+  disabled?: { ... };
+}
 ```
 
 ## 📖 API Reference
 
 ### Core Functions
 
-#### createElement(tag)
+#### createElement(tagOrComponent)
 
-Creates a styled React component with Tailwind.
+Cria um componente React estilizado com Tailwind.
 
-- `tag`: HTML element tag (e.g., 'div', 'button', etc.)
-- Returns a function that accepts a configuration object:
-  - `root`: Base element classes
+- `tagOrComponent`: HTML tag (ex: 'div', 'button', etc.) ou um componente React
+- Retorna uma função que aceita um objeto de configuração:
+  - `base`: Base element classes
   - `hover`: Classes applied on hover
   - `active`: Classes applied on active
   - `focus`: Classes applied on focus
   - `disabled`: Classes applied when disabled
   - `nested`: Object with styles for nested elements
-  - `responsive`: Object with responsive configurations
+  - `responsive`: Objeto com configurações responsivas (ver acima)
 
-### Helper Functions
+#### craft(tagOrComponent)
 
-#### tailorFit(config)
+Cria um componente com uma API de configuração unificada. Aceita tanto string quanto componente React.
 
-Creates responsive styles configuration.
-
-- `config`: Object with breakpoint keys and class values
-- Returns a `ResponsiveConfig` object
-
-#### embroider(styles)
-
-Creates nested styles configuration.
-
-- `styles`: Object with selectors and their classes
-- Returns a `NestedStyles` object
-
-#### spinThread(config)
-
-Creates animation configuration.
-
-- `config`: Object with animation properties:
-  - `type`: 'spin' | 'ping' | 'pulse' | 'bounce' | 'none'
-  - `duration`: Animation duration
-  - `delay`: Animation delay
-  - `iteration`: 'once' | 'infinite'
-  - `direction`: 'normal' | 'reverse'
-  - `timing`: Animation timing function
-
-#### craft(tag)
-
-Creates a component with a unified configuration API.
-
-- `tag`: HTML element tag
-- Returns a function that accepts a `CraftConfig` object:
+- `tagOrComponent`: HTML tag ou componente React
+- Retorna uma função que aceita um objeto `CraftConfig`:
   - `base`: Base styles
   - `variants`: Component variants
   - `responsive`: Responsive styles
