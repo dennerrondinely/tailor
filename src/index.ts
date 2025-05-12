@@ -1,3 +1,4 @@
+export * from './types';
 export * from './core/element';
 export * from './helpers/responsive';
 export * from './helpers/nested';
