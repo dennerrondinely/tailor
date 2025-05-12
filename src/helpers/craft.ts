@@ -1,8 +1,9 @@
-import { ElementConfig } from '../types';
+import { ElementConfig, ResponsiveConfig } from '../types';
 import { createElement } from '../core/element';
 import { tailorFit } from './tailorFit';
 import { spinThread } from './spinThread';
 import { stitch } from './stitch';
+import React from 'react';
 
 type CraftConfig = {
   base?: string;
@@ -11,11 +12,7 @@ type CraftConfig = {
       [key: string]: string;
     };
   };
-  responsive?: {
-    [key: string]: {
-      [key: string]: string;
-    };
-  };
+  responsive?: ResponsiveConfig;
   nested?: {
     [key: string]: string;
   };
@@ -29,7 +26,9 @@ type CraftConfig = {
   };
 };
 
-export function craft(tag: keyof JSX.IntrinsicElements) {
+type CraftInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
+
+export function craft(input: CraftInput) {
   return (config: CraftConfig) => {
     const elementConfig: ElementConfig = {
       base: config.base
@@ -91,6 +90,6 @@ export function craft(tag: keyof JSX.IntrinsicElements) {
         : animationClass;
     }
 
-    return createElement(tag)(elementConfig);
+    return createElement(input)(elementConfig);
   };
 } 

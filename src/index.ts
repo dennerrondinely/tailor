@@ -5,6 +5,8 @@ export * from './helpers/embroider';
 export * from './helpers/spinThread';
 export * from './helpers/craft';
 export * from './helpers/stitch';
+export * from './core/utils/classes';
+export * from './core/utils/responsive';
 
 import { createElement, createStyledElement } from './core/element';
 import { tailorFit } from './helpers/tailorFit';
