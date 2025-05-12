@@ -1,18 +1,24 @@
 export * from './types';
 export * from './core/element';
-export * from './helpers/responsive';
-export * from './helpers/nested';
-export * from './helpers/animation';
+export * from './helpers/tailorFit';
+export * from './helpers/embroider';
+export * from './helpers/spinThread';
+export * from './helpers/craft';
+export * from './helpers/stitch';
 
 import { createElement, createStyledElement } from './core/element';
-import { tailorFit } from './helpers/responsive';
-import { embroider } from './helpers/nested';
-import { spinThread } from './helpers/animation';
+import { tailorFit } from './helpers/tailorFit';
+import { embroider } from './helpers/embroider';
+import { spinThread } from './helpers/spinThread';
+import { craft } from './helpers/craft';
+import { stitch } from './helpers/stitch';
 
 export default {
   createElement,
   createStyledElement,
   tailorFit,
   embroider,
-  spinThread
+  spinThread,
+  craft,
+  stitch
 }; 
