@@ -6,9 +6,6 @@ describe('Tailor', () => {
   it('should create a component with basic styles', () => {
     const Button = craft('button')({
       base: 'px-4 py-2',
-      variants: {
-        hover: 'bg-blue-500',
-      },
     });
 
     render(<Button>Click me</Button>);
@@ -31,12 +28,6 @@ describe('Tailor', () => {
   it('should handle all style categories', () => {
     const Button = craft('button')({
       base: 'base',
-      variants: {
-        hover: 'hover',
-        active: 'active',
-        focus: 'focus',
-        disabled: 'disabled',
-      },
     });
 
     render(<Button disabled>Click me</Button>);

@@ -1,24 +1,12 @@
 import {
   ElementConfig,
   ResponsiveConfig,
-  VariantConfig,
-  AnimationConfig,
+  CraftConfig,
 } from "../types";
 import { createElement } from "../core/element";
-import { tailorFit } from "./tailorFit";
 import { spinThread } from "./spinThread";
 import { stitch } from "./stitch";
 import React from "react";
-
-type CraftConfig = {
-  base?: string;
-  variants?: VariantConfig;
-  responsive?: ResponsiveConfig;
-  nested?: {
-    [key: string]: string;
-  };
-  animation?: AnimationConfig;
-};
 
 type CraftInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
 
@@ -27,18 +15,6 @@ export function craft(input: CraftInput) {
     const elementConfig: ElementConfig = {
       base: config.base,
     };
-
-    // Add variants
-    if (config.variants) {
-      Object.entries(config.variants).forEach(([variant, styles]) => {
-        Object.entries(styles).forEach(([value, className]) => {
-          if (variant === "hover") elementConfig.hover = className;
-          if (variant === "active") elementConfig.active = className;
-          if (variant === "focus") elementConfig.focus = className;
-          if (variant === "disabled") elementConfig.disabled = className;
-        });
-      });
-    }
 
     // Add responsive styles
     if (config.responsive) {
@@ -63,6 +39,11 @@ export function craft(input: CraftInput) {
       elementConfig.base = elementConfig.base
         ? `${elementConfig.base} ${animationClass}`
         : animationClass;
+    }
+
+    // Add dynamic classes
+    if (config.dynamic) {
+      elementConfig.dynamic = config.dynamic;
     }
 
     return createElement(input)(elementConfig);

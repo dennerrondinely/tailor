@@ -24,10 +24,6 @@ export type ResponsiveElementConfig = {
   disabled?: ResponsiveConfig;
 };
 
-export type VariantConfig = {
-  [key: string]: string;
-};
-
 export type AnimationConfig = {
   type: 'spin' | 'ping' | 'pulse' | 'bounce' | 'none';
   duration?: '75' | '100' | '150' | '200' | '300' | '500' | '700' | '1000';
@@ -48,7 +44,6 @@ export type ElementConfig = {
   disabled?: string;
   responsive?: ResponsiveElementConfig;
   nested?: NestedStyles;
-  variants?: VariantConfig;
   animation?: AnimationConfig;
   dynamic?: DynamicClassConfig;
 };
@@ -74,7 +69,6 @@ export type TailwindAnimationConfig = {
 
 export type CraftConfig = {
   base?: string;
-  variants?: VariantConfig;
   responsive?: ResponsiveConfig;
   nested?: {
     [key: string]: string;
