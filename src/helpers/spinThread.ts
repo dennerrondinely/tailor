@@ -1,5 +1,10 @@
 import { TailwindAnimationConfig } from '../types';
 
+/**
+ * Generates a string of Tailwind CSS animation classes based on the provided configuration.
+ * @param config - Animation configuration including type, duration, delay, iteration, direction, and timing.
+ * @returns A string with Tailwind animation classes.
+ */
 export function spinThread(config: TailwindAnimationConfig): string {
   const {
     type,

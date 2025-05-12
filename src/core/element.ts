@@ -2,6 +2,12 @@ import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { ElementConfig, TailorProps, ReactElementWithProps, ResponsiveConfig } from '../types';
 
+/**
+ * Builds an array of responsive Tailwind classes for a given config and prefix.
+ * @param config - ResponsiveConfig object with breakpoint keys and class values.
+ * @param prefix - Optional prefix for the class (e.g., 'hover:').
+ * @returns An array of responsive class strings.
+ */
 function buildResponsiveClasses(config: ResponsiveConfig | undefined, prefix: string = ''): string[] {
   if (!config) return [];
   
@@ -17,12 +23,17 @@ function buildResponsiveClasses(config: ResponsiveConfig | undefined, prefix: st
   return classes;
 }
 
+/**
+ * Builds the final className string for a component based on its ElementConfig.
+ * @param config - ElementConfig object with all style options.
+ * @returns A string with all merged Tailwind classes.
+ */
 function buildClassName(config: ElementConfig): string {
   const classes: string[] = [];
 
   // Root classes
-  if (config.root) {
-    classes.push(config.root);
+  if (config.base) {
+    classes.push(config.base);
   }
 
   if (config.hover) {
@@ -42,9 +53,9 @@ function buildClassName(config: ElementConfig): string {
   }
 
   if (config.responsive) {
-    const { root, hover, active, focus, disabled } = config.responsive;
+    const { base, hover, active, focus, disabled } = config.responsive;
 
-    classes.push(...buildResponsiveClasses(root));
+    classes.push(...buildResponsiveClasses(base));
     classes.push(...buildResponsiveClasses(hover, 'hover:'));
     classes.push(...buildResponsiveClasses(active, 'active:'));
     classes.push(...buildResponsiveClasses(focus, 'focus:'));
@@ -54,6 +65,11 @@ function buildClassName(config: ElementConfig): string {
   return classes.join(' ');
 }
 
+/**
+ * Creates a styled React component for a given tag and configuration.
+ * @param tag - The HTML tag to render (e.g., 'div', 'button').
+ * @returns A function that takes an ElementConfig and returns a React component.
+ */
 export function createElement(tag: keyof JSX.IntrinsicElements) {
   return (config: ElementConfig = {}) => {
     return React.forwardRef<HTMLElement, TailorProps>((props, ref) => {
@@ -110,6 +126,12 @@ export function createElement(tag: keyof JSX.IntrinsicElements) {
   };
 }
 
+/**
+ * Creates a styled React component with a default configuration.
+ * @param tag - The HTML tag to render.
+ * @param defaultConfig - The default ElementConfig to use.
+ * @returns A React component with the default styles applied.
+ */
 export function createStyledElement(tag: keyof JSX.IntrinsicElements, defaultConfig: ElementConfig = {}) {
   return createElement(tag)(defaultConfig);
 } 
