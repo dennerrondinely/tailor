@@ -1,51 +1,6 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-
-type StyleObject = {
-  [key: string]: string;
-};
-
-type NestedStyles = {
-  [selector: string]: string;
-};
-
-type ResponsiveConfig = {
-  sm?: string;
-  md?: string;
-  lg?: string;
-  xl?: string;
-  '2xl'?: string;
-};
-
-type ElementConfig = {
-  root?: string;
-  hover?: string;
-  active?: string;
-  focus?: string;
-  disabled?: string;
-  responsive?: {
-    root?: ResponsiveConfig;
-    hover?: ResponsiveConfig;
-    active?: ResponsiveConfig;
-    focus?: ResponsiveConfig;
-    disabled?: ResponsiveConfig;
-  };
-  nested?: NestedStyles;
-};
-
-type TailorProps = {
-  className?: string;
-  [key: string]: any;
-};
-
-type ReactElementWithProps = React.ReactElement<{
-  className?: string;
-  [key: string]: any;
-}>;
-
-export function createNested(styles: NestedStyles) {
-  return styles;
-}
+import { ElementConfig, TailorProps, ReactElementWithProps, ResponsiveConfig } from '../types';
 
 function buildResponsiveClasses(config: ResponsiveConfig | undefined, prefix: string = ''): string[] {
   if (!config) return [];
@@ -86,18 +41,13 @@ function buildClassName(config: ElementConfig): string {
     classes.push(`disabled:${config.disabled}`);
   }
 
-  
   if (config.responsive) {
     const { root, hover, active, focus, disabled } = config.responsive;
 
     classes.push(...buildResponsiveClasses(root));
-
     classes.push(...buildResponsiveClasses(hover, 'hover:'));
-
     classes.push(...buildResponsiveClasses(active, 'active:'));
-
     classes.push(...buildResponsiveClasses(focus, 'focus:'));
-
     classes.push(...buildResponsiveClasses(disabled, 'disabled:'));
   }
 
@@ -111,12 +61,10 @@ export function createElement(tag: keyof JSX.IntrinsicElements) {
       const generatedClassName = buildClassName(config);
       const finalClassName = twMerge(generatedClassName, className);
 
-      // Se tiver estilos aninhados, aplicar aos filhos
       if (config.nested && children) {
         const styledChildren = React.Children.map(children, child => {
           if (!React.isValidElement(child)) return child;
 
-          // Encontrar estilos correspondentes para o elemento filho
           const tagName = (child.type as any)?.displayName || child.type;
           const nestedStyle = config.nested?.[tagName];
           const nestedSelectorStyle = config.nested 
@@ -162,14 +110,6 @@ export function createElement(tag: keyof JSX.IntrinsicElements) {
   };
 }
 
-// Função auxiliar para criar componentes com estilos pré-definidos
 export function createStyledElement(tag: keyof JSX.IntrinsicElements, defaultConfig: ElementConfig = {}) {
   return createElement(tag)(defaultConfig);
-}
-
-// Exportar funções principais
-export default {
-  createElement,
-  createNested,
-  createStyledElement
-}; 
+} 
