@@ -1,19 +1,13 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { createStyledElement } from '../../src';
+import { craft } from '../../src';
 
-const Button = createStyledElement('button', {
-  root: 'px-4 py-2 rounded font-medium transition-colors',
-  hover: 'hover:opacity-90',
-  active: 'active:scale-95',
-  focus: 'focus:outline-none focus:ring-2 focus:ring-offset-2',
-  disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
+const Button = craft('button')({
+  base: 'px-4 py-2 rounded font-medium transition-colors',
   responsive: {
-    root: {
-      sm: 'text-sm',
-      md: 'text-base',
-      lg: 'text-lg',
-    },
+    sm: 'px-2 py-1 text-sm',
+    md: 'px-4 py-2 text-base',
+    lg: 'px-6 py-3 text-lg',
   },
   nested: {
     'button > span': 'ml-2',

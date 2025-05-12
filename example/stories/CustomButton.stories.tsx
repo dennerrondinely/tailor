@@ -18,19 +18,11 @@ const CustomButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttribu
 // Styled version of the custom button
 const StyledCustomButton = craft(CustomButton)({
   base: 'px-4 py-2 rounded font-medium transition-colors',
-  variants: {
-    hover: {
-      default: 'hover:opacity-90'
-    },
-    active: {
-      default: 'active:scale-95'
-    },
-    focus: {
-      default: 'focus:outline-none focus:ring-2 focus:ring-offset-2'
-    },
-    disabled: {
-      default: 'disabled:opacity-50 disabled:cursor-not-allowed'
-    }
+  dynamic: {
+    'hover:opacity-90': (props) => !props.disabled,
+    'active:scale-95': (props) => !props.disabled,
+    'focus:outline-none focus:ring-2 focus:ring-offset-2': (props) => !props.disabled,
+    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled
   },
   responsive: {
     sm: 'text-sm',
