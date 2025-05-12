@@ -1,6 +1,6 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import { ElementConfig, TailorProps, ReactElementWithProps, ResponsiveConfig } from '../types';
+import { TailorProps, ReactElementWithProps, ResponsiveConfig, ElementConfig } from '../types';
 
 /**
  * Builds an array of responsive Tailwind classes for a given config and prefix.
