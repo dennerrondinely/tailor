@@ -1,12 +1,16 @@
 # <img src="images/icon.png" alt="Tailor" height="40"/>
 
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/dennerrondinely/tailor/ci.yml?branch=main)](https://github.com/dennerrondinely/tailor/actions)
+[![npm version](https://img.shields.io/npm/v/tailor.svg)](https://www.npmjs.com/package/tailor)
+[![npm downloads](https://img.shields.io/npm/dm/tailor.svg)](https://www.npmjs.com/package/tailor)
+[![license](https://img.shields.io/github/license/dennerrondinely/tailor)](https://github.com/dennerrondinely/tailor/blob/main/LICENSE)
+[![Bundlephobia](https://img.shields.io/bundlephobia/minzip/tailor)](https://bundlephobia.com/package/tailor)
+
 <div align="center">
   <img src="images/logo.png" alt="Tailor Logo" width="300" style="margin-bottom: 20px"/>
   <br/>
   <p><strong>A library for creating styled React components with Tailwind CSS in an organized and typed way, with support for nested styles, variants, and responsive design.</strong></p>
   
-  [![npm version](https://img.shields.io/npm/v/tailor.svg)](https://www.npmjs.com/package/tailor)
-  [![license](https://img.shields.io/npm/l/tailor.svg)](https://github.com/yourusername/tailor/blob/main/LICENSE)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/tailor/pulls)
 </div>
 
