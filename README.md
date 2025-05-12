@@ -18,16 +18,17 @@
 - **Responsive Design**: Built-in support for responsive styles with Tailwind breakpoints
 - **Smart Class Merging**: Uses `tailwind-merge` for intelligent class conflict resolution
 - **State Support**: Built-in support for hover, active, focus, and disabled states
+- **Animation Support**: Built-in animation utilities with Tailwind
 - **React Integration**: Seamless integration with React components and props
 
 ## 📦 Installation
 
 ```bash
-npm install tailor
+npm install @dennerrondinely/tailor
 # or
-yarn add tailor
+yarn add @dennerrondinely/tailor
 # or
-pnpm add tailor
+pnpm add @dennerrondinely/tailor
 ```
 
 ## 🚀 Quick Start
@@ -35,20 +36,20 @@ pnpm add tailor
 ### Creating Basic Components
 
 ```tsx
-import { createElement } from 'tailor';
+import { createElement } from '@dennerrondinely/tailor';
 
 const Button = createElement('button')({
-  root: 'px-4 py-2 rounded-md font-medium',
-  hover: 'bg-blue-600',
-  active: 'bg-blue-700',
-  focus: 'ring-2 ring-offset-2',
-  disabled: 'opacity-50 cursor-not-allowed',
+  root: 'px-4 py-2 bg-blue-500 text-white rounded',
+  hover: 'hover:bg-blue-600',
+  active: 'active:bg-blue-700',
+  focus: 'focus:ring-2 focus:ring-blue-500',
+  disabled: 'disabled:opacity-50'
 });
 
 // Usage
 function App() {
   return (
-    <Button onClick={() => alert('Clicked!')}>
+    <Button>
       Click me
     </Button>
   );
@@ -57,67 +58,207 @@ function App() {
 
 ## 📚 Documentation
 
-### Responsive Design
+### Helper Functions
+
+#### tailorFit
+
+Create responsive styles with ease:
 
 ```tsx
+import { tailorFit } from '@dennerrondinely/tailor';
+
+const responsiveStyles = tailorFit({
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg',
+  xl: 'text-xl'
+});
+
 const Card = createElement('div')({
-  root: 'p-4 bg-white rounded-lg shadow',
   responsive: {
-    root: {
-      sm: 'p-2', // Small screens
-      md: 'p-4', // Medium screens
-      lg: 'p-6', // Large screens
-      xl: 'p-8', // Extra large screens
-    },
-    hover: {
-      sm: 'shadow-md',
-      md: 'shadow-lg',
-      lg: 'shadow-xl',
-    }
+    root: responsiveStyles,
+    hover: tailorFit({
+      sm: 'hover:shadow-md',
+      md: 'hover:shadow-lg',
+      lg: 'hover:shadow-xl'
+    })
   }
 });
 ```
 
-### Nested Styles
+#### embroider
+
+Style nested elements within a component:
 
 ```tsx
-import { createElement, createNested } from 'tailor';
+import { embroider } from '@dennerrondinely/tailor';
 
-const articleNested = createNested({
-  h1: 'text-4xl mb-8',
-  h2: 'text-3xl mb-6',
-  p: 'text-lg mb-4',
-  'p>a': 'text-blue-500 hover:text-blue-600',
-  ul: 'list-disc pl-6 mb-4',
-  'li>p': 'mb-2',
+const cardStyles = embroider({
+  'h2': 'text-xl font-bold mb-2',
+  'p': 'text-gray-600',
+  'button': 'mt-4 bg-blue-500 text-white px-4 py-2 rounded',
+  'div > span': 'text-sm text-gray-500'
 });
 
-const Article = createElement('article')({
-  root: 'prose max-w-none',
-  nested: articleNested,
+const Card = createElement('div')({
+  root: 'bg-white rounded-lg shadow p-6',
+  nested: cardStyles
+});
+
+// Usage
+<Card>
+  <h2>Card Title</h2>
+  <p>Card content</p>
+  <button>Action</button>
+  <div>
+    <span>Additional info</span>
+  </div>
+</Card>
+```
+
+#### spinThread
+
+Add animations to your components:
+
+```tsx
+import { spinThread } from '@dennerrondinely/tailor';
+
+// Loading spinner
+const Spinner = createElement('div')({
+  root: spinThread({
+    type: 'spin',
+    duration: '1000',
+    iteration: 'infinite'
+  })
+});
+
+// Pulsing button
+const PulseButton = createElement('button')({
+  root: twMerge(
+    'px-4 py-2 bg-blue-500 text-white rounded',
+    spinThread({
+      type: 'pulse',
+      duration: '500',
+      iteration: 'infinite'
+    })
+  )
+});
+
+// Bouncing notification
+const Notification = createElement('div')({
+  root: spinThread({
+    type: 'bounce',
+    duration: '1000',
+    iteration: 'infinite',
+    direction: 'alternate'
+  })
 });
 ```
 
-### Component Variants
+#### craft
+
+A powerful utility that combines all features in a single, intuitive API:
 
 ```tsx
-const buttonBase = {
-  root: 'px-4 py-2 rounded-md font-medium transition-colors',
-  focus: 'ring-2 ring-offset-2',
-};
+import { craft } from '@dennerrondinely/tailor';
 
-const PrimaryButton = createElement('button')({
-  ...buttonBase,
-  root: `${buttonBase.root} bg-blue-500 text-white`,
-  hover: 'bg-blue-600',
-  active: 'bg-blue-700',
-  disabled: 'bg-blue-300 cursor-not-allowed',
+const Button = craft('button')({
+  // Base styles
+  base: 'px-4 py-2 rounded font-medium',
+  
+  // Variants
+  variants: {
+    hover: {
+      default: 'hover:bg-blue-600',
+      outline: 'hover:bg-blue-50'
+    },
+    active: {
+      default: 'active:bg-blue-700',
+      outline: 'active:bg-blue-100'
+    }
+  },
+  
+  // Responsive styles
+  responsive: {
+    sm: {
+      base: 'text-sm',
+      hover: 'hover:bg-blue-500'
+    },
+    md: {
+      base: 'text-base',
+      hover: 'hover:bg-blue-600'
+    }
+  },
+  
+  // Nested styles
+  nested: {
+    'span': 'text-sm text-gray-500',
+    'div > svg': 'w-4 h-4'
+  },
+  
+  // Animation
+  animation: {
+    type: 'pulse',
+    duration: '500',
+    iteration: 'infinite'
+  }
+});
+```
+
+### Combining Helpers
+
+Here's an example of how to combine multiple helpers for a complex component:
+
+```tsx
+import { craft, tailorFit, embroider, spinThread } from '@dennerrondinely/tailor';
+
+// Reusable responsive styles
+const textSizes = tailorFit({
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg'
+});
+
+// Reusable nested styles
+const cardStyles = embroider({
+  'h2': 'text-xl font-bold mb-2',
+  'p': 'text-gray-600',
+  'button': 'mt-4 bg-blue-500 text-white px-4 py-2 rounded'
+});
+
+// Complex card component using craft
+const Card = craft('div')({
+  base: 'bg-white rounded-lg shadow p-6',
+  variants: {
+    hover: {
+      default: 'hover:shadow-lg',
+      interactive: 'hover:shadow-xl hover:-translate-y-1'
+    }
+  },
+  responsive: {
+    sm: {
+      base: 'p-4',
+      hover: 'hover:shadow-md'
+    },
+    md: {
+      base: 'p-6',
+      hover: 'hover:shadow-lg'
+    }
+  },
+  nested: cardStyles,
+  animation: {
+    type: 'pulse',
+    duration: '1000',
+    iteration: 'infinite'
+  }
 });
 ```
 
 ## 📖 API Reference
 
-### createElement(tag)
+### Core Functions
+
+#### createElement(tag)
 
 Creates a styled React component with Tailwind.
 
@@ -129,21 +270,47 @@ Creates a styled React component with Tailwind.
   - `focus`: Classes applied on focus
   - `disabled`: Classes applied when disabled
   - `nested`: Object with styles for nested elements
-  - `responsive`: Object with responsive configurations:
-    - `root`: Responsive classes for base element
-    - `hover`: Responsive classes for hover state
-    - `active`: Responsive classes for active state
-    - `focus`: Responsive classes for focus state
-    - `disabled`: Responsive classes for disabled state
-    - Each state can have breakpoints: `sm`, `md`, `lg`, `xl`, `2xl`
+  - `responsive`: Object with responsive configurations
 
-### createNested(styles)
+### Helper Functions
 
-Creates a nested styles object.
+#### tailorFit(config)
+
+Creates responsive styles configuration.
+
+- `config`: Object with breakpoint keys and class values
+- Returns a `ResponsiveConfig` object
+
+#### embroider(styles)
+
+Creates nested styles configuration.
 
 - `styles`: Object with selectors and their classes
-  - Keys can be HTML tags or combined selectors (e.g., 'p>a', 'li>p')
-  - Values are strings with Tailwind classes
+- Returns a `NestedStyles` object
+
+#### spinThread(config)
+
+Creates animation configuration.
+
+- `config`: Object with animation properties:
+  - `type`: 'spin' | 'ping' | 'pulse' | 'bounce' | 'none'
+  - `duration`: Animation duration
+  - `delay`: Animation delay
+  - `iteration`: 'once' | 'infinite'
+  - `direction`: 'normal' | 'reverse'
+  - `timing`: Animation timing function
+
+#### craft(tag)
+
+Creates a component with a unified configuration API.
+
+- `tag`: HTML element tag
+- Returns a function that accepts a `CraftConfig` object:
+  - `base`: Base styles
+  - `variants`: Component variants
+  - `responsive`: Responsive styles
+  - `nested`: Nested styles
+  - `animation`: Animation configuration
 
 ## 🎯 TypeScript Support
 

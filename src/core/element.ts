@@ -20,7 +20,7 @@ function buildResponsiveClasses(config: ResponsiveConfig | undefined, prefix: st
 function buildClassName(config: ElementConfig): string {
   const classes: string[] = [];
 
-  // Base classes
+  // Root classes
   if (config.root) {
     classes.push(config.root);
   }
