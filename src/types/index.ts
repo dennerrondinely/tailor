@@ -16,20 +16,36 @@ export type ResponsiveConfig = {
   '2xl'?: string;
 };
 
+export type ResponsiveElementConfig = {
+  base?: ResponsiveConfig;
+  hover?: ResponsiveConfig;
+  active?: ResponsiveConfig;
+  focus?: ResponsiveConfig;
+  disabled?: ResponsiveConfig;
+};
+
+export type VariantConfig = {
+  [key: string]: string;
+};
+
+export type AnimationConfig = {
+  type: 'spin' | 'ping' | 'pulse' | 'bounce' | 'none';
+  duration?: '75' | '100' | '150' | '200' | '300' | '500' | '700' | '1000';
+  delay?: '75' | '100' | '150' | '200' | '300' | '500' | '700' | '1000';
+  iteration?: 'once' | 'infinite';
+  direction?: 'normal' | 'reverse';
+};
+
 export type ElementConfig = {
   base?: string;
   hover?: string;
   active?: string;
   focus?: string;
   disabled?: string;
-  responsive?: {
-    base?: ResponsiveConfig;
-    hover?: ResponsiveConfig;
-    active?: ResponsiveConfig;
-    focus?: ResponsiveConfig;
-    disabled?: ResponsiveConfig;
-  };
+  responsive?: ResponsiveElementConfig;
   nested?: NestedStyles;
+  variants?: VariantConfig;
+  animation?: AnimationConfig;
 };
 
 export type TailorProps = {
