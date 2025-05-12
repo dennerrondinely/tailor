@@ -10,8 +10,8 @@ import React from "react";
 
 type CraftInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
 
-export function craft(input: CraftInput) {
-  return (config: CraftConfig) => {
+export function craft<TProps = any>(input: CraftInput) {
+  return (config: CraftConfig<TProps>): React.FC<TProps> => {
     const elementConfig: ElementConfig = {
       base: config.base,
     };
@@ -46,6 +46,16 @@ export function craft(input: CraftInput) {
       elementConfig.dynamic = config.dynamic;
     }
 
-    return createElement(input)(elementConfig);
+    // Add variants
+    if (config.variants) {
+      const { hover, active, focus, disabled } = config.variants;
+      if (hover) elementConfig.hover = hover;
+      if (active) elementConfig.active = active;
+      if (focus) elementConfig.focus = focus;
+      if (disabled) elementConfig.disabled = disabled;
+    }
+
+    // Garantir que o componente retornado é tipado corretamente
+    return createElement(input)(elementConfig) as React.FC<TProps>;
   };
 }

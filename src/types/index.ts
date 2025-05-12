@@ -32,8 +32,18 @@ export type AnimationConfig = {
   direction?: 'normal' | 'reverse';
 };
 
-export type DynamicClassConfig = {
-  [className: string]: (props: any) => boolean;
+// Type to validate Tailwind classes
+export type TailwindClass = string;
+
+// Utility type to convert optional values to boolean
+export type ToBoolean<T> = T extends undefined ? false : boolean;
+
+// Type for the dynamic condition function
+export type DynamicCondition<TProps = any> = (props: TProps) => ToBoolean<TProps[keyof TProps]>;
+
+// Type for the dynamic class object
+export type DynamicClassConfig<TProps = any> = {
+  [className: TailwindClass]: DynamicCondition<TProps>;
 };
 
 export type ElementConfig = {
@@ -67,12 +77,19 @@ export type TailwindAnimationConfig = {
   timing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
 };
 
-export type CraftConfig = {
+// Update CraftConfig to be generic
+export type CraftConfig<TProps = any> = {
   base?: string;
   responsive?: ResponsiveConfig;
   nested?: {
     [key: string]: string;
   };
   animation?: AnimationConfig;
-  dynamic?: DynamicClassConfig;
+  dynamic?: DynamicClassConfig<TProps>;
+  variants?: {
+    hover?: string;
+    active?: string;
+    focus?: string;
+    disabled?: string;
+  };
 }; 

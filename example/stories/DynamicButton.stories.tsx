@@ -2,13 +2,15 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { craft } from '../../src';
 
+// Definir as props do componente
 type DynamicButtonProps = {
   isActive?: boolean;
   children?: React.ReactNode;
   className?: string;
 };
 
-const DynamicButton = craft('button')({
+// Usar a tipagem genérica com as props definidas
+const DynamicButton = craft<DynamicButtonProps>('button')({
   base: 'px-4 py-2 rounded font-medium text-white transition-colors bg-blue-500',
   dynamic: {
     'bg-green-500': (props) => !!props.isActive,
