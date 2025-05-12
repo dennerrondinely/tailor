@@ -17,13 +17,13 @@ export type ResponsiveConfig = {
 };
 
 export type ElementConfig = {
-  root?: string;
+  base?: string;
   hover?: string;
   active?: string;
   focus?: string;
   disabled?: string;
   responsive?: {
-    root?: ResponsiveConfig;
+    base?: ResponsiveConfig;
     hover?: ResponsiveConfig;
     active?: ResponsiveConfig;
     focus?: ResponsiveConfig;

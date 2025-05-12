@@ -2,9 +2,9 @@ import React from 'react';
 import { createElement } from '../../../src';
 
 export const Card = createElement('div')({
-  root: 'bg-white rounded-lg shadow',
+  base: 'bg-white rounded-lg shadow',
   responsive: {
-    root: {
+    base: {
       sm: 'p-2',
       md: 'p-4',
       lg: 'p-6',

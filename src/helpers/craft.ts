@@ -1,7 +1,6 @@
 import { ElementConfig } from '../types';
 import { createElement } from '../core/element';
 import { tailorFit } from './tailorFit';
-import { embroider } from './embroider';
 import { spinThread } from './spinThread';
 import { stitch } from './stitch';
 
@@ -33,7 +32,7 @@ type CraftConfig = {
 export function craft(tag: keyof JSX.IntrinsicElements) {
   return (config: CraftConfig) => {
     const elementConfig: ElementConfig = {
-      root: config.base ? embroider(config.base) : undefined
+      base: config.base
     };
 
     // Add variants
@@ -51,7 +50,7 @@ export function craft(tag: keyof JSX.IntrinsicElements) {
     // Add responsive styles
     if (config.responsive) {
       elementConfig.responsive = {
-        root: tailorFit(
+        base: tailorFit(
           Object.entries(config.responsive).reduce((acc, [breakpoint, styles]) => {
             Object.entries(styles).forEach(([variant, className]) => {
               if (variant === 'base') {
@@ -87,8 +86,8 @@ export function craft(tag: keyof JSX.IntrinsicElements) {
     // Add animation
     if (config.animation) {
       const animationClass = spinThread(config.animation);
-      elementConfig.root = elementConfig.root 
-        ? `${elementConfig.root} ${animationClass}`
+      elementConfig.base = elementConfig.base 
+        ? `${elementConfig.base} ${animationClass}`
         : animationClass;
     }
 

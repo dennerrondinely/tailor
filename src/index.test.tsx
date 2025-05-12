@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { createElement, createNested } from './index';
+import { createElement } from './index';
 
 describe('Tailor', () => {
   it('should create a component with basic styles', () => {
     const Button = createElement('button')({
-      root: 'px-4 py-2',
+      base: 'px-4 py-2',
       hover: 'bg-blue-500',
     });
 
@@ -18,7 +18,7 @@ describe('Tailor', () => {
 
   it('should merge custom class names', () => {
     const Button = createElement('button')({
-      root: 'px-4 py-2',
+      base: 'px-4 py-2',
     });
 
     render(<Button className="custom-class">Click me</Button>);
@@ -29,7 +29,7 @@ describe('Tailor', () => {
 
   it('should handle all style categories', () => {
     const Button = createElement('button')({
-      root: 'base',
+      base: 'base',
       hover: 'hover',
       active: 'active',
       focus: 'focus',
@@ -46,15 +46,13 @@ describe('Tailor', () => {
   });
 
   it('should handle nested styles', () => {
-    const nested = createNested({
-      h1: 'text-4xl',
-      p: 'text-lg',
-      'p>a': 'text-blue-500',
-    });
-
     const Article = createElement('article')({
-      root: 'prose',
-      nested,
+      base: 'prose',
+      nested: {
+        h1: 'text-4xl',
+        p: 'text-lg',
+        'p>a': 'text-blue-500',
+      }
     });
 
     render(
@@ -75,9 +73,9 @@ describe('Tailor', () => {
 
   it('should handle responsive styles', () => {
     const Card = createElement('div')({
-      root: 'base',
+      base: 'base',
       responsive: {
-        root: {
+        base: {
           sm: 'sm-base',
           md: 'md-base',
           lg: 'lg-base',
@@ -109,9 +107,9 @@ describe('Tailor', () => {
 
   it('should handle all responsive states', () => {
     const Button = createElement('button')({
-      root: 'base',
+      base: 'base',
       responsive: {
-        root: {
+        base: {
           sm: 'sm-base',
           md: 'md-base',
         },
@@ -163,7 +161,7 @@ describe('Tailor', () => {
 
   it('should forward refs correctly', () => {
     const Button = createElement('button')({
-      root: 'px-4 py-2',
+      base: 'px-4 py-2',
     });
 
     const ref = React.createRef<HTMLButtonElement>();

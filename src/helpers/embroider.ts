@@ -1,10 +1,13 @@
-/**
- * Creates the base (root) styles configuration for a component.
- * @param base - A string with Tailwind classes for the root element.
- * @returns The base class string.
- */
-export function embroider(base: string): string {
-  return base;
-}
+import { ElementConfig } from '../types';
 
-export default embroider; 
+/**
+ * Embroider a CraftConfig object.
+ * @param config - The CraftConfig object to embroider.
+ * @returns The embroidered CraftConfig object.
+ */
+
+type EmbroiderConfig = Pick<ElementConfig, 'base' | 'hover' | 'active' | 'focus' | 'disabled'>;
+
+export function embroider(config: EmbroiderConfig): EmbroiderConfig {
+  return config;
+} 
