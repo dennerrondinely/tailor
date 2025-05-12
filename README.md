@@ -10,241 +10,227 @@
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/tailor/pulls)
 </div>
 
-## ✨ Features
+## Features
 
-- **Type Safety**: Full TypeScript support with proper type definitions
-- **Nested Styles**: Support for styling nested elements with complex selectors
-- **Component Variants**: Easy creation of component variants with shared base styles
-- **Responsive Design**: Built-in support for responsive styles with Tailwind breakpoints
-- **Smart Class Merging**: Uses `tailwind-merge` for intelligent class conflict resolution
-- **State Support**: Built-in support for hover, active, focus, and disabled states
-- **Animation Support**: Built-in animation utilities with Tailwind
-- **React Integration**: Seamless integration with React components and props
+- 🎨 Type-safe styling with TypeScript
+- 🎯 Smart class merging
+- 📱 Responsive design support
+- 🎭 Dynamic class generation based on props
+- 🎪 Nested styles
+- 🎬 Animation support
 
-## 📦 Installation
+## Installation
 
 ```bash
-npm install @dennerrondinely/tailor
+npm install @tailor/react
 # or
-yarn add @dennerrondinely/tailor
+yarn add @tailor/react
 # or
-pnpm add @dennerrondinely/tailor
+pnpm add @tailor/react
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
-### Creating Basic Components
+### Basic Component
 
 ```tsx
-import { createElement } from '@dennerrondinely/tailor';
+import { craft } from '@tailor/react';
 
-const Button = createElement('button')({
-  base: 'px-4 py-2 bg-blue-500 text-white rounded',
-  hover: 'bg-blue-600',
-  active: 'bg-blue-700',
-  focus: 'ring-2 ring-blue-500',
-  disabled: 'opacity-50',
+interface ButtonProps {
+  isActive?: boolean;
+  disabled?: boolean;
+  children: React.ReactNode;
+}
+
+const Button: React.FC<ButtonProps> = ({ children, ...props }) => (
+  <button {...props}>{children}</button>
+);
+
+const StyledButton = craft(Button)({
+  base: 'px-4 py-2 rounded font-medium transition-colors',
+  dynamic: {
+    'bg-blue-500 text-white': (props) => !props.isActive,
+    'bg-green-500 text-white': (props) => props.isActive,
+    'hover:opacity-90': (props) => !props.disabled,
+    'active:scale-95': (props) => !props.disabled,
+    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled
+  },
   responsive: {
-    base: {
-      sm: 'text-sm',
-      md: 'text-base',
-      lg: 'text-lg'
-    },
-    hover: {
-      sm: 'bg-blue-400',
-      md: 'bg-blue-500',
-      lg: 'bg-blue-600'
-    }
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg'
   }
 });
 
 // Usage
-function App() {
-  return (
-    <Button>
-      Click me
-    </Button>
-  );
+<StyledButton isActive={true}>Click me</StyledButton>
+```
+
+### Using Dynamic Classes
+
+Dynamic classes allow you to apply styles based on component props. This is particularly useful for managing component states and variants:
+
+```tsx
+interface DynamicButtonProps {
+  isActive?: boolean;
+  disabled?: boolean;
+  isPressed?: boolean;
+  children: React.ReactNode;
 }
-```
 
-### Using with Custom Components
+const DynamicButton: React.FC<DynamicButtonProps> = ({ children, ...props }) => (
+  <button {...props}>{children}</button>
+);
 
-Você pode usar `createElement` ou `craft` com componentes React já existentes:
-
-```tsx
-import { craft } from '@dennerrondinely/tailor';
-
-const CustomButton = React.forwardRef((props, ref) => (
-  <button ref={ref} {...props} />
-));
-
-const StyledCustomButton = craft(CustomButton)({
-  base: 'px-4 py-2 rounded font-medium',
-  variants: {
-    hover: { default: 'hover:opacity-90' },
-    active: { default: 'active:scale-95' }
-  },
-  responsive: {
-    base: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' }
+const StyledDynamicButton = craft(DynamicButton)({
+  base: 'px-4 py-2 rounded font-medium transition-all',
+  dynamic: {
+    // Base styles based on active state
+    'bg-blue-500 text-white': (props) => !props.isActive,
+    'bg-green-500 text-white': (props) => props.isActive,
+    
+    // Interactive states
+    'hover:opacity-90': (props) => !props.disabled,
+    'active:scale-95': (props) => !props.disabled,
+    
+    // Disabled state
+    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled,
+    
+    // Additional states
+    'shadow-lg': (props) => props.isPressed
   }
 });
+
+// Usage examples
+<StyledDynamicButton>Default</StyledDynamicButton>
+<StyledDynamicButton isActive>Active</StyledDynamicButton>
+<StyledDynamicButton disabled>Disabled</StyledDynamicButton>
+<StyledDynamicButton isPressed>Pressed</StyledDynamicButton>
 ```
 
-## 📚 Documentation
+### Advanced Example with Multiple Conditions
 
-### Helper Functions
-
-#### tailorFit
-
-Create responsive styles with ease:
+Here's a more complex example showing how to combine multiple conditions and features:
 
 ```tsx
-import { tailorFit } from '@dennerrondinely/tailor';
+interface StatusCardProps {
+  status: 'success' | 'error' | 'warning' | 'info';
+  size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+  loading?: boolean;
+  children: React.ReactNode;
+}
 
-const responsiveStyles = tailorFit({
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
-  xl: 'text-xl'
-});
+const StatusCard: React.FC<StatusCardProps> = ({ children, ...props }) => (
+  <div {...props}>{children}</div>
+);
 
-const Card = createElement('div')({
-  responsive: {
-    base: responsiveStyles,
-    hover: tailorFit({
-      sm: 'hover:shadow-md',
-      md: 'hover:shadow-lg',
-      lg: 'hover:shadow-xl'
-    })
-  }
-});
-```
-
-#### embroider
-
-Style nested elements within a component:
-
-```tsx
-import { embroider } from '@dennerrondinely/tailor';
-
-const cardStyles = embroider({
-  'h2': 'text-xl font-bold mb-2',
-  'p': 'text-gray-600',
-  'button': 'mt-4 bg-blue-500 text-white px-4 py-2 rounded',
-  'div > span': 'text-sm text-gray-500'
-});
-
-const Card = createElement('div')({
-  base: 'bg-white rounded-lg shadow p-6',
-  nested: cardStyles
-});
-```
-
-#### spinThread
-
-Add animations to your components:
-
-```tsx
-import { spinThread } from '@dennerrondinely/tailor';
-
-const Spinner = createElement('div')({
-  base: spinThread({
-    type: 'spin',
-    duration: '1000',
-    iteration: 'infinite'
-  })
-});
-```
-
-#### craft
-
-A powerful utility that combines all features in a single, intuitive API. Agora aceita tanto string quanto componente React:
-
-```tsx
-import { craft } from '@dennerrondinely/tailor';
-
-const Button = craft('button')({
-  base: 'px-4 py-2 rounded font-medium',
-  variants: {
-    hover: { default: 'hover:bg-blue-600', outline: 'hover:bg-blue-50' },
-    active: { default: 'active:bg-blue-700', outline: 'active:bg-blue-100' }
+const StyledStatusCard = craft(StatusCard)({
+  base: 'p-4 rounded-lg shadow transition-all',
+  dynamic: {
+    // Status-based styles
+    'bg-green-100 text-green-800 border-green-200': (props) => props.status === 'success',
+    'bg-red-100 text-red-800 border-red-200': (props) => props.status === 'error',
+    'bg-yellow-100 text-yellow-800 border-yellow-200': (props) => props.status === 'warning',
+    'bg-blue-100 text-blue-800 border-blue-200': (props) => props.status === 'info',
+    
+    // Size-based styles
+    'p-2 text-sm': (props) => props.size === 'small',
+    'p-6 text-lg': (props) => props.size === 'large',
+    
+    // State-based styles
+    'opacity-50 cursor-not-allowed': (props) => props.disabled,
+    'animate-pulse': (props) => props.loading
   },
   responsive: {
-    base: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' },
-    hover: { sm: 'hover:bg-blue-500', md: 'hover:bg-blue-600' }
+    sm: 'text-sm',
+    md: 'text-base',
+    lg: 'text-lg'
   },
   nested: {
-    'span': 'text-sm text-gray-500',
-    'div > svg': 'w-4 h-4'
-  },
-  animation: {
-    type: 'pulse',
-    duration: '500',
-    iteration: 'infinite'
+    '.status-icon': 'mr-2',
+    '.status-title': 'font-bold mb-1',
+    '.status-description': 'text-sm opacity-80'
   }
 });
 
-// Exemplo com componente customizado
-const CustomButton = React.forwardRef((props, ref) => (
-  <button ref={ref} {...props} />
-));
-
-const StyledCustomButton = craft(CustomButton)({
-  base: 'px-4 py-2 rounded font-medium',
-  variants: {
-    hover: { default: 'hover:opacity-90' },
-    active: { default: 'active:scale-95' }
-  },
-  responsive: {
-    base: { sm: 'text-sm', md: 'text-base', lg: 'text-lg' }
-  }
-});
+// Usage examples
+<StyledStatusCard status="success" size="small">Success</StyledStatusCard>
+<StyledStatusCard status="error" loading>Error</StyledStatusCard>
+<StyledStatusCard status="warning" disabled>Warning</StyledStatusCard>
+<StyledStatusCard status="info" size="large">Info</StyledStatusCard>
 ```
 
-### Responsive Config
+### Themed Components
 
-A configuração responsiva agora segue o formato:
+You can also use dynamic classes to create themed components:
 
-```ts
-responsive: {
-  base?: { sm?: string; md?: string; ... };
-  hover?: { sm?: string; ... };
-  active?: { ... };
-  focus?: { ... };
-  disabled?: { ... };
+```tsx
+interface ThemedButtonProps {
+  theme: 'light' | 'dark';
+  variant: 'default' | 'primary' | 'success' | 'danger';
+  disabled?: boolean;
+  loading?: boolean;
+  children: React.ReactNode;
 }
+
+const ThemedButton: React.FC<ThemedButtonProps> = ({ children, ...props }) => (
+  <button {...props}>{children}</button>
+);
+
+const StyledThemedButton = craft(ThemedButton)({
+  base: 'px-4 py-2 rounded font-medium transition-all',
+  dynamic: {
+    // Light theme variants
+    'bg-gray-100 text-gray-900 border border-gray-300': (props) => 
+      props.theme === 'light' && props.variant === 'default',
+    'bg-blue-100 text-blue-900 border border-blue-300': (props) => 
+      props.theme === 'light' && props.variant === 'primary',
+    'bg-green-100 text-green-900 border border-green-300': (props) => 
+      props.theme === 'light' && props.variant === 'success',
+    'bg-red-100 text-red-900 border border-red-300': (props) => 
+      props.theme === 'light' && props.variant === 'danger',
+    
+    // Dark theme variants
+    'bg-gray-800 text-gray-100 border border-gray-700': (props) => 
+      props.theme === 'dark' && props.variant === 'default',
+    'bg-blue-800 text-blue-100 border border-blue-700': (props) => 
+      props.theme === 'dark' && props.variant === 'primary',
+    'bg-green-800 text-green-100 border border-green-700': (props) => 
+      props.theme === 'dark' && props.variant === 'success',
+    'bg-red-800 text-red-100 border border-red-700': (props) => 
+      props.theme === 'dark' && props.variant === 'danger',
+    
+    // Interactive states
+    'hover:opacity-90': (props) => !props.disabled && !props.loading,
+    'active:scale-95': (props) => !props.disabled && !props.loading,
+    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled,
+    'animate-pulse': (props) => props.loading
+  }
+});
+
+// Usage examples
+<StyledThemedButton theme="light" variant="primary">Light Primary</StyledThemedButton>
+<StyledThemedButton theme="dark" variant="success">Dark Success</StyledThemedButton>
+<StyledThemedButton theme="light" variant="danger" disabled>Light Danger Disabled</StyledThemedButton>
+<StyledThemedButton theme="dark" variant="default" loading>Dark Default Loading</StyledThemedButton>
 ```
 
-## 📖 API Reference
+## API Reference
 
-### Core Functions
+### `craft(Component)`
 
-#### createElement(tagOrComponent)
+Creates a styled version of a React component with Tailwind CSS classes.
 
-Cria um componente React estilizado com Tailwind.
+#### Configuration
 
-- `tagOrComponent`: HTML tag (ex: 'div', 'button', etc.) ou um componente React
-- Retorna uma função que aceita um objeto de configuração:
-  - `base`: Base element classes
-  - `hover`: Classes applied on hover
-  - `active`: Classes applied on active
-  - `focus`: Classes applied on focus
-  - `disabled`: Classes applied when disabled
-  - `nested`: Object with styles for nested elements
-  - `responsive`: Objeto com configurações responsivas (ver acima)
+The `craft` function accepts a configuration object with the following properties:
 
-#### craft(tagOrComponent)
-
-Cria um componente com uma API de configuração unificada. Aceita tanto string quanto componente React.
-
-- `tagOrComponent`: HTML tag ou componente React
-- Retorna uma função que aceita um objeto `CraftConfig`:
-  - `base`: Base styles
-  - `variants`: Component variants
-  - `responsive`: Responsive styles
-  - `nested`: Nested styles
-  - `animation`: Animation configuration
+- `base`: Base classes applied to the component
+- `dynamic`: Object mapping class names to functions that receive props and return boolean values
+- `responsive`: Object mapping breakpoint names to class names
+- `nested`: Object mapping selectors to class names for nested elements
+- `animation`: Object mapping animation names to class names
 
 ## 🎯 TypeScript Support
 
