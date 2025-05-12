@@ -1,13 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { createElement } from './index';
-
+import { craft } from './helpers/craft';
 describe('Tailor', () => {
   it('should create a component with basic styles', () => {
-    const Button = createElement('button')({
+    const Button = craft('button')({
       base: 'px-4 py-2',
-      hover: 'bg-blue-500',
+      variants: {
+        hover: 'bg-blue-500',
+      },
     });
 
     render(<Button>Click me</Button>);
@@ -17,7 +18,7 @@ describe('Tailor', () => {
   });
 
   it('should merge custom class names', () => {
-    const Button = createElement('button')({
+    const Button = craft('button')({
       base: 'px-4 py-2',
     });
 
@@ -28,12 +29,14 @@ describe('Tailor', () => {
   });
 
   it('should handle all style categories', () => {
-    const Button = createElement('button')({
+    const Button = craft('button')({
       base: 'base',
-      hover: 'hover',
-      active: 'active',
-      focus: 'focus',
-      disabled: 'disabled',
+      variants: {
+        hover: 'hover',
+        active: 'active',
+        focus: 'focus',
+        disabled: 'disabled',
+      },
     });
 
     render(<Button disabled>Click me</Button>);
@@ -46,7 +49,7 @@ describe('Tailor', () => {
   });
 
   it('should handle nested styles', () => {
-    const Article = createElement('article')({
+    const Article = craft('article')({
       base: 'prose',
       nested: {
         h1: 'text-4xl',
@@ -72,19 +75,14 @@ describe('Tailor', () => {
   });
 
   it('should handle responsive styles', () => {
-    const Card = createElement('div')({
+    const Card = craft('div')({
       base: 'base',
       responsive: {
-        base: {
-          sm: 'sm-base',
-          md: 'md-base',
-          lg: 'lg-base',
-        },
-        hover: {
-          sm: 'sm-hover',
-          md: 'md-hover',
-          lg: 'lg-hover',
-        }
+        sm: 'sm',
+        md: 'md',
+        lg: 'lg',
+        xl: 'xl',
+        '2xl': '2xl',
       }
     });
 
@@ -106,29 +104,14 @@ describe('Tailor', () => {
   });
 
   it('should handle all responsive states', () => {
-    const Button = createElement('button')({
+    const Button = craft('button')({
       base: 'base',
       responsive: {
-        base: {
-          sm: 'sm-base',
-          md: 'md-base',
-        },
-        hover: {
-          sm: 'sm-hover',
-          md: 'md-hover',
-        },
-        active: {
-          sm: 'sm-active',
-          md: 'md-active',
-        },
-        focus: {
-          sm: 'sm-focus',
-          md: 'md-focus',
-        },
-        disabled: {
-          sm: 'sm-disabled',
-          md: 'md-disabled',
-        }
+        lg: 'lg',
+        md: 'md',
+        sm: 'sm',
+        xl: 'xl',
+        '2xl': '2xl',
       }
     });
 
@@ -160,7 +143,7 @@ describe('Tailor', () => {
   });
 
   it('should forward refs correctly', () => {
-    const Button = createElement('button')({
+    const Button = craft('button')({
       base: 'px-4 py-2',
     });
 
