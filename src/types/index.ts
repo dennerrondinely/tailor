@@ -36,6 +36,10 @@ export type AnimationConfig = {
   direction?: 'normal' | 'reverse';
 };
 
+export type DynamicClassConfig = {
+  [className: string]: (props: any) => boolean;
+};
+
 export type ElementConfig = {
   base?: string;
   hover?: string;
@@ -46,6 +50,7 @@ export type ElementConfig = {
   nested?: NestedStyles;
   variants?: VariantConfig;
   animation?: AnimationConfig;
+  dynamic?: DynamicClassConfig;
 };
 
 export type TailorProps = {
@@ -65,4 +70,15 @@ export type TailwindAnimationConfig = {
   iteration?: 'once' | 'infinite';
   direction?: 'normal' | 'reverse';
   timing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
+};
+
+export type CraftConfig = {
+  base?: string;
+  variants?: VariantConfig;
+  responsive?: ResponsiveConfig;
+  nested?: {
+    [key: string]: string;
+  };
+  animation?: AnimationConfig;
+  dynamic?: DynamicClassConfig;
 }; 

@@ -14,8 +14,16 @@ export function createElement(input: ElementInput) {
   return (config: ElementConfig = {}) => {
     return React.forwardRef<any, TailorProps>((props, ref) => {
       const { className, children, ...rest } = props;
+      // Dynamic classes
+      let dynamicClasses = '';
+      if (config.dynamic) {
+        dynamicClasses = Object.entries(config.dynamic)
+          .filter(([className, fn]) => typeof fn === 'function' && fn(props))
+          .map(([className]) => className)
+          .join(' ');
+      }
       const generatedClassName = buildClassName(config);
-      const finalClassName = twMerge(generatedClassName, className);
+      const finalClassName = twMerge(generatedClassName, dynamicClasses, className);
 
       if (config.nested && children) {
         const styledChildren = React.Children.map(children, child => {
