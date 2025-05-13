@@ -4,7 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/tailor.svg)](https://www.npmjs.com/package/tailor)
 [![npm downloads](https://img.shields.io/npm/dm/tailor.svg)](https://www.npmjs.com/package/tailor)
 [![license](https://img.shields.io/github/license/dennerrondinely/tailor)](https://github.com/dennerrondinely/tailor/blob/main/LICENSE)
-[![Bundlephobia](https://img.shields.io/bundlephobia/minzip/tailor)](https://bundlephobia.com/package/tailor)
+[![Bundlephobia](https://img.shields.io/bundlephobia/minzip/@dennerrondinely/tailor@0.1.0)](https://bundlephobia.com/package/@dennerrondinely/tailor@0.1.0)
 
 <div align="center">
   <img src="images/logo.png" alt="Tailor Logo" width="300" style="margin-bottom: 20px"/>
@@ -26,11 +26,11 @@
 ## Installation
 
 ```bash
-npm install @tailor/react
+npm install @dennerrondinely/tailor
 # or
-yarn add @tailor/react
+yarn add @dennerrondinely/tailor
 # or
-pnpm add @tailor/react
+pnpm add @dennerrondinely/tailor
 ```
 
 ## Quick Start
