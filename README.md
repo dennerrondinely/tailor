@@ -236,6 +236,254 @@ The `craft` function accepts a configuration object with the following propertie
 - `nested`: Object mapping selectors to class names for nested elements
 - `animation`: Object mapping animation names to class names
 
+## Helper Functions
+
+Tailor provides several helper functions to make styling components easier and more maintainable.
+
+### `spinThread(config: TailwindAnimationConfig)`
+
+Creates animation classes for your components. Perfect for loading states, transitions, and interactive elements.
+
+```tsx
+import { spinThread } from '@dennerrondinely/tailor';
+
+// Basic usage
+const spinAnimation = spinThread({ type: 'spin' });
+// Result: 'animate-spin'
+
+// Advanced usage with all options
+const customAnimation = spinThread({
+  type: 'pulse',
+  duration: '1000',
+  delay: '200',
+  iteration: 'infinite',
+  direction: 'reverse',
+  timing: 'ease-in-out'
+});
+// Result: 'animate-pulse duration-1000 delay-200 infinite reverse ease-in-out'
+
+// Usage in a component
+const LoadingSpinner = craft('div')({
+  base: spinThread({ type: 'spin', duration: '1000' }),
+  // ... other styles
+});
+```
+
+### `stitch(styles: NestedStyles)`
+
+Creates nested styles for child elements within your components using Tailwind's nesting pattern. This allows you to style child elements using Tailwind's modifier syntax, group utilities, and arbitrary selectors.
+
+```tsx
+import { stitch } from '@dennerrondinely/tailor';
+
+// Example of styling article content - a common use case
+const Article = craft('article')({
+  base: 'prose prose-lg max-w-3xl mx-auto',
+  nested: stitch({
+    // Basic typography styles
+    'h1': 'font-bold text-3xl mb-4',
+    'h2': 'font-semibold text-2xl mb-3',
+    'h3': 'font-medium text-xl mb-2',
+    'p': 'mb-4 text-gray-700',
+    
+    // Link styles within paragraphs
+    'p > a': 'text-blue-500 hover:text-blue-600 underline',
+    
+    // List styles
+    'ul': 'list-disc list-inside mb-4',
+    'ol': 'list-decimal list-inside mb-4',
+    'li': 'mb-1',
+    
+    // Code blocks
+    'pre': 'bg-gray-100 p-4 rounded-lg mb-4',
+    'code': 'font-mono text-sm',
+    
+    // Blockquotes
+    'blockquote': 'border-l-4 border-gray-300 pl-4 italic my-4',
+    
+    // Images
+    'img': 'rounded-lg my-4',
+    'figcaption': 'text-sm text-gray-500 text-center mt-2',
+    
+    // Tables
+    'table': 'w-full border-collapse mb-4',
+    'th': 'border border-gray-300 bg-gray-100 p-2',
+    'td': 'border border-gray-300 p-2',
+    
+    // Dark mode support
+    'dark': {
+      'p': 'text-gray-300',
+      'blockquote': 'border-gray-600',
+      'pre': 'bg-gray-800',
+      'th': 'border-gray-600 bg-gray-700',
+      'td': 'border-gray-600'
+    }
+  })
+});
+
+// Usage
+<Article>
+  <h1>Getting Started with Tailwind CSS</h1>
+  <p>
+    Tailwind CSS is a utility-first CSS framework that allows you to build custom designs
+    without ever leaving your HTML. <a href="#">Learn more about Tailwind</a>.
+  </p>
+  <h2>Key Features</h2>
+  <ul>
+    <li>Utility-first approach</li>
+    <li>Responsive design</li>
+    <li>Customizable</li>
+  </ul>
+  <blockquote>
+    "Tailwind CSS is the only framework that I've seen scale on large teams."
+  </blockquote>
+  <pre>
+    <code>npm install tailwindcss</code>
+  </pre>
+</Article>
+
+// Example with SVG icon component using arbitrary selectors
+const IconButton = craft('button')({
+  base: 'p-2 rounded-full transition-colors',
+  nested: stitch({
+    // Using arbitrary selectors to target SVG elements
+    'svg': {
+      base: 'w-6 h-6',
+      // Target specific SVG elements using [&_selector]
+      'hover:[&_path]:fill-white': true,
+      'hover:[&_circle]:fill-black': true,
+      'hover:[&_circle]:stroke-black': true,
+      // You can also use group modifiers
+      'group-hover:[&_path]:fill-blue-500': true,
+      'group-focus:[&_rect]:stroke-2': true
+    }
+  })
+});
+
+// Example with a more complex component using various nesting patterns
+const SocialButton = craft('button')({
+  base: 'p-3 rounded-lg transition-all group',
+  nested: stitch({
+    // Base styles for the icon container
+    '.icon-wrapper': 'relative inline-block',
+    
+    // SVG specific styles with arbitrary selectors
+    'svg': {
+      base: 'w-6 h-6',
+      // Target multiple elements
+      'hover:[&_path]:fill-white': true,
+      'hover:[&_circle]:fill-black': true,
+      'hover:[&_rect]:stroke-2': true,
+      // Use with other modifiers
+      'dark:[&_path]:fill-gray-200': true,
+      'dark:hover:[&_path]:fill-white': true,
+      // Complex selectors
+      'hover:[&_.icon-path]:fill-blue-500': true,
+      'hover:[&_.icon-circle]:stroke-blue-500': true
+    },
+    
+    // Text styles with hover effects
+    '.button-text': {
+      base: 'ml-2 text-sm font-medium',
+      'group-hover:text-white': true,
+      'dark:text-gray-200': true
+    },
+    
+    // Background effects
+    '&': {
+      base: 'bg-gray-100',
+      'hover:bg-blue-500': true,
+      'dark:bg-gray-800': true,
+      'dark:hover:bg-blue-600': true
+    }
+  })
+});
+
+// Usage examples
+<IconButton>
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+</IconButton>
+
+<SocialButton>
+  <div className="icon-wrapper">
+    <svg viewBox="0 0 24 24">
+      <path className="icon-path" d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <circle className="icon-circle" cx="12" cy="12" r="3"/>
+    </svg>
+  </div>
+  <span className="button-text">Follow</span>
+</SocialButton>
+```
+
+The `stitch` helper supports all Tailwind CSS nesting features:
+
+- Direct child selectors using `>`
+- Group modifiers using `group-*`
+- State variants (hover, focus, active, etc.)
+- Responsive modifiers (sm, md, lg, xl, 2xl)
+- Dark mode using `dark:`
+- Custom modifiers
+- Arbitrary selectors using `[&_selector]` syntax
+- Multiple modifiers can be combined
+
+This makes it easy to create complex component styles while maintaining Tailwind's utility-first approach and keeping your styles organized and maintainable. Common use cases include:
+
+- Styling article/blog content
+- Creating consistent typography systems
+- Styling SVG elements
+- Targeting specific elements within complex components
+- Creating custom hover/focus states for nested elements
+- Applying styles to elements based on parent state
+
+### `tailorFit(config: ResponsiveConfig)`
+
+Creates responsive styles that adapt to different screen sizes.
+
+```tsx
+import { tailorFit } from '@dennerrondinely/tailor';
+
+// Create responsive styles
+const responsiveStyles = tailorFit({
+  sm: 'text-sm p-2',
+  md: 'text-base p-4',
+  lg: 'text-lg p-6',
+  xl: 'text-xl p-8',
+  '2xl': 'text-2xl p-10'
+});
+
+// Usage in a component
+const ResponsiveContainer = craft('div')({
+  base: 'bg-white rounded',
+  responsive: responsiveStyles
+});
+```
+
+### `embroider(config: EmbroiderConfig)`
+
+Creates interactive state styles (hover, active, focus, disabled) for your components.
+
+```tsx
+import { embroider } from '@dennerrondinely/tailor';
+
+// Create interactive styles
+const interactiveStyles = embroider({
+  base: 'px-4 py-2 rounded transition-colors',
+  hover: 'hover:bg-blue-600',
+  active: 'active:bg-blue-700',
+  focus: 'focus:ring-2 focus:ring-blue-500 focus:outline-none',
+  disabled: 'disabled:opacity-50 disabled:cursor-not-allowed'
+});
+
+// Usage in a component
+const InteractiveButton = craft('button')({
+  ...interactiveStyles,
+  base: 'bg-blue-500 text-white'
+});
+```
+
 ## 🎯 TypeScript Support
 
 The library is fully typed and provides autocompletion for all available properties.
