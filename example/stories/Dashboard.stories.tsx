@@ -7,7 +7,7 @@ import { Article } from '../src/components/Article';
 import { Button } from '../src/components/Button';
 
 const meta = {
-  title: 'Components/Dashboard',
+  title: 'Tailor/Dashboard',
   component: () => (
     <div className="min-h-screen bg-gray-100">
       <Nav>

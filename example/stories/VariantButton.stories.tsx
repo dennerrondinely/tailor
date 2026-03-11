@@ -38,7 +38,7 @@ const Button = craft('button')({
 // ---------------------------------------------------------------------------
 
 const meta = {
-  title: 'Example/VariantButton',
+  title: 'Tailor/Variants',
   component: Button,
   parameters: { layout: 'centered' },
   tags: ['autodocs'],

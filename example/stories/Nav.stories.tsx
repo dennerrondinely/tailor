@@ -1,89 +1,107 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { createElement } from '../../src';
+import { craft } from '../../src';
 
-const Nav = createElement('nav')({
-  root: 'bg-gray-800 text-white',
-  responsive: {
-    root: {
-      sm: 'p-2',
-      md: 'p-4',
-      lg: 'p-6',
-    }
-  }
+// ---------------------------------------------------------------------------
+// Component definitions
+// ---------------------------------------------------------------------------
+
+const Nav = craft('nav')({
+  base: 'bg-gray-900 text-white px-4 py-3',
 });
 
-const NavItem = createElement('a')({
-  root: 'text-gray-300 hover:text-white',
-  hover: 'text-white',
-  responsive: {
-    root: {
-      sm: 'text-sm px-2',
-      md: 'text-base px-4',
-      lg: 'text-lg px-6',
-    }
-  }
+const NavBrand = craft('a')({
+  base: 'text-white font-bold text-lg tracking-tight hover:text-gray-200 transition-colors',
 });
+
+const NavLink = craft('a')({
+  base: 'text-gray-400 hover:text-white text-sm font-medium transition-colors px-3 py-1 rounded-md hover:bg-gray-800',
+  variants: {
+    active: {
+      true: 'text-white bg-gray-800',
+      false: '',
+    },
+  },
+  defaultVariants: { active: 'false' },
+});
+
+const NavCta = craft('a')({
+  base: 'text-sm font-medium px-4 py-1.5 rounded-md transition-colors',
+  variants: {
+    variant: {
+      outline: 'border border-gray-600 text-gray-200 hover:border-white hover:text-white',
+      filled:  'bg-blue-600 text-white hover:bg-blue-700',
+    },
+  },
+  defaultVariants: { variant: 'filled' },
+});
+
+// ---------------------------------------------------------------------------
+// Meta
+// ---------------------------------------------------------------------------
 
 const meta = {
-  title: 'Example/Nav',
+  title: 'Tailor/Nav',
   component: Nav,
-  parameters: {
-    layout: 'padded',
-  },
+  parameters: { layout: 'fullscreen' },
   tags: ['autodocs'],
 } satisfies Meta<typeof Nav>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {
-  args: {
-    children: (
-      <div className="flex space-x-4">
-        <NavItem href="#">Home</NavItem>
-        <NavItem href="#">About</NavItem>
-        <NavItem href="#">Contact</NavItem>
+// ---------------------------------------------------------------------------
+// Stories
+// ---------------------------------------------------------------------------
+
+export const Simple: Story = {
+  render: () => (
+    <Nav>
+      <div className="flex items-center gap-1">
+        <NavLink href="#" active="true">Home</NavLink>
+        <NavLink href="#">About</NavLink>
+        <NavLink href="#">Contact</NavLink>
       </div>
-    ),
-  },
+    </Nav>
+  ),
 };
 
-export const WithLogo: Story = {
-  args: {
-    children: (
+export const WithBrandAndCta: Story = {
+  name: 'With brand + CTA',
+  render: () => (
+    <Nav>
       <div className="flex items-center justify-between">
-        <div className="text-white font-bold text-xl">Logo</div>
-        <div className="flex space-x-4">
-          <NavItem href="#">Home</NavItem>
-          <NavItem href="#">About</NavItem>
-          <NavItem href="#">Contact</NavItem>
-        </div>
-      </div>
-    ),
-  },
-};
-
-export const WithDropdown: Story = {
-  args: {
-    children: (
-      <div className="flex items-center justify-between">
-        <div className="flex space-x-4">
-          <NavItem href="#">Home</NavItem>
-          <NavItem href="#">Products</NavItem>
-          <div className="relative group">
-            <NavItem href="#" className="flex items-center">
-              More <span className="ml-1">▼</span>
-            </NavItem>
-            <div className="absolute left-0 mt-2 w-48 bg-gray-800 rounded shadow-lg hidden group-hover:block">
-              <NavItem href="#" className="block py-2">Submenu 1</NavItem>
-              <NavItem href="#" className="block py-2">Submenu 2</NavItem>
-              <NavItem href="#" className="block py-2">Submenu 3</NavItem>
-            </div>
+        <div className="flex items-center gap-6">
+          <NavBrand href="#">⚡ Tailor</NavBrand>
+          <div className="flex items-center gap-1">
+            <NavLink href="#" active="true">Docs</NavLink>
+            <NavLink href="#">Components</NavLink>
+            <NavLink href="#">Examples</NavLink>
           </div>
         </div>
-        <NavItem href="#" className="bg-blue-500 rounded px-4 py-2">Sign In</NavItem>
+        <div className="flex items-center gap-2">
+          <NavCta href="#" variant="outline">Log in</NavCta>
+          <NavCta href="#" variant="filled">Get started</NavCta>
+        </div>
       </div>
-    ),
-  },
-}; 
+    </Nav>
+  ),
+};
+
+export const MobileMenu: Story = {
+  name: 'Mobile-style (stacked)',
+  render: () => (
+    <div className="w-64 bg-gray-900 min-h-screen p-4 flex flex-col gap-1">
+      <NavBrand href="#" className="mb-4 block">⚡ Tailor</NavBrand>
+      <NavLink href="#" active="true">Home</NavLink>
+      <NavLink href="#">Components</NavLink>
+      <NavLink href="#">Docs</NavLink>
+      <NavLink href="#">Blog</NavLink>
+      <div className="mt-auto pt-4 border-t border-gray-800">
+        <NavCta href="#" variant="filled" className="block text-center w-full">
+          Get started
+        </NavCta>
+      </div>
+    </div>
+  ),
+};

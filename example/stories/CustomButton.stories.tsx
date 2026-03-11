@@ -2,72 +2,108 @@ import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { craft } from '../../src';
 
-// Custom button component
-const CustomButton = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(
-  (props, ref) => {
-    const { children, ...rest } = props;
-    return (
-      <button ref={ref} {...rest}>
-        <span className="custom-icon">★</span>
-        {children}
-      </button>
-    );
-  }
+// ---------------------------------------------------------------------------
+// Demonstrates wrapping a custom forwardRef component with craft()
+// ---------------------------------------------------------------------------
+
+type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  icon?: string;
+};
+
+/**
+ * A custom base component that renders an optional icon slot.
+ * craft() wraps it and applies all Tailor styling capabilities.
+ */
+const IconButtonBase = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ children, icon = '★', ...rest }, ref) => (
+    <button ref={ref} {...rest}>
+      <span data-slot="icon">{icon}</span>
+      {children}
+    </button>
+  ),
 );
+IconButtonBase.displayName = 'IconButtonBase';
 
-// Styled version of the custom button
-const StyledCustomButton = craft(CustomButton)({
-  base: 'px-4 py-2 rounded font-medium transition-colors',
-  dynamic: {
-    'hover:opacity-90': (props) => !props.disabled,
-    'active:scale-95': (props) => !props.disabled,
-    'focus:outline-none focus:ring-2 focus:ring-offset-2': (props) => !props.disabled,
-    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled
-  },
-  responsive: {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg'
-  },
+const IconButton = craft(IconButtonBase)({
+  base: 'inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2',
   nested: {
-    '.custom-icon': 'mr-2 text-yellow-400'
-  }
-});
-
-const meta = {
-  title: 'Example/CustomButton',
-  component: StyledCustomButton,
-  parameters: {
-    layout: 'centered',
+    '[data-slot=icon]': 'text-yellow-400 text-base',
   },
-  tags: ['autodocs'],
-  argTypes: {
-    className: {
-      control: 'text',
+  dynamic: {
+    'hover:opacity-90 active:scale-95':    (props) => !props.disabled,
+    'opacity-50 cursor-not-allowed':       (props) => !!props.disabled,
+  },
+  variants: {
+    variant: {
+      blue:   'bg-blue-600   text-white focus:ring-blue-500',
+      green:  'bg-green-600  text-white focus:ring-green-500',
+      gray:   'bg-gray-700   text-white focus:ring-gray-500',
+      ghost:  'bg-transparent text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-400',
     },
   },
-} satisfies Meta<typeof StyledCustomButton>;
+  defaultVariants: { variant: 'blue' },
+});
+
+// ---------------------------------------------------------------------------
+// Meta
+// ---------------------------------------------------------------------------
+
+const meta = {
+  title: 'Tailor/Custom Component',
+  component: IconButton,
+  parameters: { layout: 'centered' },
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      description: 'Color variant.',
+      control: { type: 'select' },
+      options: ['blue', 'green', 'gray', 'ghost'],
+    },
+    icon: {
+      description: 'Icon character rendered in the icon slot.',
+      control: 'text',
+    },
+    disabled: { control: 'boolean' },
+    children: { control: 'text' },
+  },
+} satisfies Meta<typeof IconButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Primary: Story = {
-  args: {
-    children: 'Custom Button',
-    className: 'bg-blue-500 text-white hover:bg-blue-600',
-  },
+// ---------------------------------------------------------------------------
+// Stories
+// ---------------------------------------------------------------------------
+
+export const Default: Story = {
+  args: { variant: 'blue', icon: '★', children: 'Star Action' },
 };
 
-export const Secondary: Story = {
-  args: {
-    children: 'Custom Button',
-    className: 'bg-gray-500 text-white hover:bg-gray-600',
-  },
+export const Green: Story = {
+  args: { variant: 'green', icon: '✓', children: 'Confirm' },
 };
 
-export const WithLongText: Story = {
-  args: {
-    children: 'Custom Button with a very long text that might wrap',
-    className: 'bg-green-500 text-white hover:bg-green-600 max-w-xs',
-  },
-}; 
+export const Ghost: Story = {
+  args: { variant: 'ghost', icon: '⚙', children: 'Settings' },
+};
+
+export const Disabled: Story = {
+  args: { variant: 'blue', icon: '✕', children: 'Disabled', disabled: true },
+};
+
+export const CustomIcon: Story = {
+  args: { variant: 'gray', icon: '🚀', children: 'Deploy' },
+};
+
+export const AllVariants: Story = {
+  name: 'Showcase — all variants',
+  render: () => (
+    <div className="flex flex-wrap gap-3">
+      <IconButton variant="blue"  icon="★">Blue</IconButton>
+      <IconButton variant="green" icon="✓">Green</IconButton>
+      <IconButton variant="gray"  icon="⚙">Gray</IconButton>
+      <IconButton variant="ghost" icon="↗">Ghost</IconButton>
+      <IconButton variant="blue"  icon="✕" disabled>Disabled</IconButton>
+    </div>
+  ),
+};

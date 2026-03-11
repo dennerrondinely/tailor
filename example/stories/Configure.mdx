@@ -1,5 +1,79 @@
 import { Meta } from "@storybook/blocks";
-import Image from "next/image";
+
+<Meta title="Tailor / Introduction" />
+
+<div style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 720, margin: '0 auto', padding: '2rem 1rem', lineHeight: 1.6 }}>
+
+# ⚡ Tailor
+
+**Tailor** is a utility-first React component library built on top of
+[Tailwind CSS](https://tailwindcss.com) and [tailwind-merge](https://github.com/dcastil/tailwind-merge).
+
+It gives you all the ergonomics of styled-components — typed variants, responsive
+breakpoints, interaction states, nested selectors — with **zero runtime overhead**.
+Every styling decision compiles down to a plain Tailwind class string.
+
+---
+
+## Core API
+
+| Helper | Description |
+|---|---|
+| `craft(tag)(config)` | Main API — creates a typed styled component |
+| `stitch(nestedStyles)` | CSS-like child selectors (`h1`, `p>a`, `[data-slot=icon]`) |
+| `tailorFit(breakpoints)` | Responsive classes per breakpoint (`sm`, `md`, `lg`…) |
+| `embroider(states)` | Interaction states (`hover`, `focus`, `active`, `disabled`) |
+| `spinThread(animation)` | Tailwind animation class generator |
+
+---
+
+## Quick example
+
+```tsx
+import { craft } from '@dennerrondinely/tailor';
+
+const Button = craft('button')({
+  base: 'rounded-md font-medium transition-colors',
+  variants: {
+    intent: {
+      primary:   'bg-blue-600 text-white hover:bg-blue-700',
+      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+      danger:    'bg-red-600 text-white hover:bg-red-700',
+    },
+    size: {
+      sm: 'text-sm px-3 py-1.5',
+      md: 'text-sm px-4 py-2',
+      lg: 'text-base px-5 py-2.5',
+    },
+  },
+  defaultVariants: { intent: 'primary', size: 'md' },
+});
+
+// Fully typed — intent and size props are inferred from the variants config
+<Button intent="primary" size="lg">Click me</Button>
+
+// Polymorphic — render as an anchor, gains href/target/rel…
+<Button as="a" href="/go" intent="secondary">Learn more</Button>
+```
+
+---
+
+## Stories
+
+| Category | What it demonstrates |
+|---|---|
+| **Tailor/Button** | `variants`, `compoundVariants`, sizes, states, `className` override |
+| **Tailor/Card** | `variants`, composed sub-components (Header/Body/Footer) |
+| **Tailor/Article** | `stitch()` nested selectors, `tailorFit()` responsive |
+| **Tailor/Nav** | `craft()` with active variant, `as` prop |
+| **Tailor/Grid** | Responsive grid via variants |
+| **Tailor/Variants** | Full CVA-style variant matrix |
+| **Tailor/Dynamic** | `dynamic` prop — classes conditioned on runtime values |
+| **Tailor/Custom Component** | Wrapping a `forwardRef` component with `craft()` |
+| **Tailor/Polymorphic** | `as` prop — render as any element or component |
+| **Tailor/Dashboard** | Composed full-page layout |
+
+</div>
 
 import Github from "./assets/github.svg";
 import Discord from "./assets/discord.svg";

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { craft } from '../../src/helpers/craft';
+import { craft } from '../../src';
 
 // ---------------------------------------------------------------------------
 // A simple styled button – the *default* element is <button>
@@ -18,7 +18,7 @@ const Button = craft('button')({
 });
 
 const meta = {
-  title: 'Polymorphic/Button as …',
+  title: 'Tailor/Polymorphic',
   component: Button,
   tags: ['autodocs'],
   argTypes: {
