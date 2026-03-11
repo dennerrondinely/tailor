@@ -3,6 +3,7 @@ import {
   CraftConfig,
   ElementConfig,
   InferVariantProps,
+  TailorComponent,
   ResponsiveConfig,
   VariantDefinition,
 } from '../types';
@@ -40,8 +41,11 @@ type CraftInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
  *   ],
  * });
  *
- * // Usage — intent and size props are fully typed:
+ * // Variant props are fully typed:
  * <Button intent="primary" size="lg">Click me</Button>
+ *
+ * // Polymorphic — render as an anchor, get href/target/rel etc.:
+ * <Button as="a" href="/go">Go</Button>
  * ```
  */
 export function craft<TProps = Record<string, unknown>>(
@@ -49,7 +53,7 @@ export function craft<TProps = Record<string, unknown>>(
 ) {
   return <V extends VariantDefinition = VariantDefinition>(
     config: CraftConfig<TProps, V>
-  ): React.FC<TProps & InferVariantProps<V>> => {
+  ): TailorComponent<TProps & InferVariantProps<V>> => {
     const elementConfig: ElementConfig = {
       base: config.base,
     };
@@ -102,7 +106,7 @@ export function craft<TProps = Record<string, unknown>>(
       if (disabled) elementConfig.disabled = disabled;
     }
 
-    const component = createElement(input)(elementConfig) as unknown as React.FC<
+    const component = createElement(input)(elementConfig) as unknown as TailorComponent<
       TProps & InferVariantProps<V>
     >;
 

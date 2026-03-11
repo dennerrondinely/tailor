@@ -4,6 +4,87 @@ export type StyleObject = {
   [key: string]: string;
 };
 
+// ---------------------------------------------------------------------------
+// Polymorphic "as" prop utilities
+// ---------------------------------------------------------------------------
+
+/**
+ * The element/component that the Tailor component should render as.
+ * Accepts any valid HTML tag string or a React component type.
+ */
+export type AsProp<C extends React.ElementType> = {
+  /** Render the component as a different HTML element or React component. */
+  as?: C;
+};
+
+/**
+ * Extracts the intrinsic or component props for a given element type,
+ * omitting any keys already defined by `OwnProps` to avoid conflicts.
+ */
+export type PropsOf<C extends React.ElementType> =
+  React.ComponentPropsWithoutRef<C>;
+
+/**
+ * Merges the element's native props with the component's own props.
+ * Keys in `OwnProps` take precedence over native props, so custom
+ * prop names are never shadowed by HTML attributes.
+ *
+ * @example
+ * // Button rendered as an anchor — gets href, target, rel, etc.
+ * type Props = PolymorphicProps<'a', { variant?: 'primary' }>;
+ */
+export type PolymorphicProps<
+  C extends React.ElementType,
+  OwnProps = Record<string, unknown>,
+> = AsProp<C> &
+  Omit<PropsOf<C>, keyof OwnProps | 'as'> &
+  OwnProps & {
+    className?: string;
+    children?: React.ReactNode;
+  };
+
+/**
+ * A React component that supports the polymorphic `as` prop.
+ *
+ * `DefaultTag` is the element rendered when `as` is not provided.
+ * `OwnProps` are the component's own typed props (variants, etc.).
+ *
+ * @example
+ * const Button: PolymorphicComponent<'button', { intent?: 'primary' | 'danger' }> = ...
+ *
+ * <Button />                          // renders <button>
+ * <Button as="a" href="/go">Go</Button> // renders <a href="/go">
+ */
+export type PolymorphicComponent<
+  DefaultTag extends React.ElementType,
+  OwnProps = Record<string, unknown>,
+> = <C extends React.ElementType = DefaultTag>(
+  props: PolymorphicProps<C, OwnProps> & React.RefAttributes<unknown>,
+) => React.ReactElement | null;
+
+/**
+ * A `React.ForwardRefExoticComponent` extended with the polymorphic `as` prop.
+ *
+ * This is used as the concrete return type of `craft()` so consumers can
+ * always pass `as`, `ref`, `className`, children and any component-specific
+ * props while TypeScript accepts arbitrary HTML-element props too.
+ *
+ * The index signature of the component's own props (e.g. from variant
+ * inference) is deliberately widened to `any` here so that `as` and `ref`
+ * are never blocked by an index-signature conflict.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type TailorComponent<_OwnProps = Record<string, unknown>> =
+  React.ForwardRefExoticComponent<{
+    /** Render as a different HTML element or React component. */
+    as?: React.ElementType;
+    className?: string;
+    children?: React.ReactNode;
+    ref?: React.Ref<unknown>;
+    // Intentionally open — variant props, HTML attrs, and data-* are all valid.
+    [key: string]: any;
+  }>;
+
 /**
  * Maps CSS-like selectors to Tailwind class strings.
  *
@@ -135,7 +216,10 @@ export type ElementConfig = {
 };
 
 export type TailorProps = {
+  /** Override the rendered element/component at runtime. */
+  as?: React.ElementType;
   className?: string;
+  children?: React.ReactNode;
   [key: string]: any;
 };
 

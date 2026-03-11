@@ -42,7 +42,10 @@ function deriveDisplayName(input: ElementInput): string {
 export function createElement(input: ElementInput) {
   return (config: ElementConfig = {}) => {
     const component = React.forwardRef<any, TailorProps>((props, ref) => {
-      const { className, children, ...rest } = props;
+      const { className, children, as: Tag, ...rest } = props;
+
+      // `as` prop overrides the element type at render time
+      const ElementTag: ElementInput = (Tag as ElementInput) ?? input;
 
       // Dynamic classes
       let dynamicClasses = '';
@@ -65,7 +68,7 @@ export function createElement(input: ElementInput) {
       if (config.nested && children) {
         const styledChildren = applyNestedStyles(children, config.nested);
 
-        return React.createElement(input, {
+        return React.createElement(ElementTag, {
           ...rest,
           className: finalClassName,
           ref,
@@ -73,7 +76,7 @@ export function createElement(input: ElementInput) {
         });
       }
 
-      return React.createElement(input, {
+      return React.createElement(ElementTag, {
         ...rest,
         className: finalClassName,
         ref,
