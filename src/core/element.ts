@@ -3,6 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { TailorProps, ElementConfig } from '../types';
 import { buildClassName } from './utils/classes';
 import { applyNestedStyles } from './utils/nested';
+import { resolveVariants } from './utils/variants';
 
 type ElementInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
 
@@ -15,16 +16,24 @@ export function createElement(input: ElementInput) {
   return (config: ElementConfig = {}) => {
     return React.forwardRef<any, TailorProps>((props, ref) => {
       const { className, children, ...rest } = props;
+
       // Dynamic classes
       let dynamicClasses = '';
       if (config.dynamic) {
         dynamicClasses = Object.entries(config.dynamic)
-          .filter(([className, fn]) => typeof fn === 'function' && fn(props))
-          .map(([className]) => className)
+          .filter(([, fn]) => typeof fn === 'function' && fn(props))
+          .map(([cls]) => cls)
           .join(' ');
       }
+
+      // Semantic variant classes
+      let variantClasses = '';
+      if (config.variantsConfig) {
+        variantClasses = resolveVariants(config.variantsConfig, props as Record<string, unknown>);
+      }
+
       const generatedClassName = buildClassName(config);
-      const finalClassName = twMerge(generatedClassName, dynamicClasses, className);
+      const finalClassName = twMerge(generatedClassName, variantClasses, dynamicClasses, className);
 
       if (config.nested && children) {
         const styledChildren = applyNestedStyles(children, config.nested);

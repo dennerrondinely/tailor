@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { createElement } from '../../src';
+import { craft } from '../../dist';
 
-const Card = createElement('div')({
+const Card = craft('div')({
   root: 'bg-white rounded-lg shadow',
   responsive: {
     root: {
