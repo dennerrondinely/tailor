@@ -1,27 +1,35 @@
 # <img src="images/icon.png" alt="Tailor" height="40"/>
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/dennerrondinely/tailor/ci.yml?branch=main)](https://github.com/dennerrondinely/tailor/actions)
-[![npm version](https://img.shields.io/npm/v/tailor.svg)](https://www.npmjs.com/package/tailor)
-[![npm downloads](https://img.shields.io/npm/dm/tailor.svg)](https://www.npmjs.com/package/tailor)
+[![npm version](https://img.shields.io/npm/v/%40dennerrondinely%2Ftailor.svg)](https://www.npmjs.com/package/@dennerrondinely/tailor)
+[![npm downloads](https://img.shields.io/npm/dm/%40dennerrondinely%2Ftailor.svg)](https://www.npmjs.com/package/@dennerrondinely/tailor)
 [![license](https://img.shields.io/github/license/dennerrondinely/tailor)](https://github.com/dennerrondinely/tailor/blob/main/LICENSE)
-[![Bundlephobia](https://img.shields.io/bundlephobia/minzip/@dennerrondinely/tailor@0.1.0)](https://bundlephobia.com/package/@dennerrondinely/tailor@0.1.0)
+[![Bundlephobia](https://img.shields.io/bundlephobia/minzip/@dennerrondinely/tailor)](https://bundlephobia.com/package/@dennerrondinely/tailor)
 
 <div align="center">
   <img src="images/logo.png" alt="Tailor Logo" width="300" style="margin-bottom: 20px"/>
   <br/>
-  <p><strong>A library for creating styled React components with Tailwind CSS in an organized and typed way, with support for nested styles, variants, and responsive design.</strong></p>
-  
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/tailor/pulls)
+  <p><strong>Build typed, composable React components with Tailwind CSS — variants, polymorphic <code>as</code>, nested selectors, responsive, and animation. Zero runtime overhead.</strong></p>
+
+  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/dennerrondinely/tailor/pulls)
 </div>
+
+---
 
 ## Features
 
-- 🎨 Type-safe styling with TypeScript
-- 🎯 Smart class merging
-- 📱 Responsive design support
-- 🎭 Dynamic class generation based on props
-- 🎪 Nested styles
-- 🎬 Animation support
+- 🎯 **CVA-style semantic variants** with TypeScript inference — `variants`, `defaultVariants`, `compoundVariants`
+- 🔀 **Polymorphic `as` prop** — change the rendered element without losing type safety
+- 🪆 **CSS-like nested selectors** — target `h1`, `.class`, `[data-attr]`, `>` child, and descendant
+- 📱 **Responsive breakpoints** — `sm`, `md`, `lg`, `xl`, `2xl` utilities
+- 🎭 **Interactive state styles** — `hover`, `focus`, `active`, `disabled` in one call
+- 🎬 **Animation helpers** — `spin`, `ping`, `pulse`, `bounce` with full control
+- 💨 **Zero runtime overhead** — pure Tailwind class strings, no CSS-in-JS
+- 🌲 **Tree-shakeable** — dual CJS/ESM, `sideEffects: false`
+- 🧠 **Automatic `displayName`** — components show up correctly in React DevTools
+- 🔷 **Fully typed** — complete TypeScript definitions included
+
+---
 
 ## Installation
 
@@ -33,471 +41,445 @@ yarn add @dennerrondinely/tailor
 pnpm add @dennerrondinely/tailor
 ```
 
+> **Peer dependencies:** `react ^18.0.0` · `tailwindcss ^3.0.0`
+
+---
+
 ## Quick Start
 
-### Basic Component
-
 ```tsx
-import { craft } from '@tailor/react';
+import { craft } from '@dennerrondinely/tailor';
 
-interface ButtonProps {
-  isActive?: boolean;
-  disabled?: boolean;
-  children: React.ReactNode;
-}
-
-const Button: React.FC<ButtonProps> = ({ children, ...props }) => (
-  <button {...props}>{children}</button>
-);
-
-const StyledButton = craft(Button)({
-  base: 'px-4 py-2 rounded font-medium transition-colors',
-  dynamic: {
-    'bg-blue-500 text-white': (props) => !props.isActive,
-    'bg-green-500 text-white': (props) => props.isActive,
-    'hover:opacity-90': (props) => !props.disabled,
-    'active:scale-95': (props) => !props.disabled,
-    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled
+const Button = craft('button')({
+  base: 'rounded font-medium transition-colors focus:outline-none',
+  variants: {
+    intent: {
+      primary:   'bg-blue-500 text-white hover:bg-blue-600',
+      secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+      danger:    'bg-red-500 text-white hover:bg-red-600',
+    },
+    size: {
+      sm: 'text-sm px-2 py-1',
+      md: 'text-base px-4 py-2',
+      lg: 'text-lg px-6 py-3',
+    },
   },
-  responsive: {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg'
-  }
+  defaultVariants: { intent: 'primary', size: 'md' },
+  compoundVariants: [
+    { intent: 'primary', size: 'lg', className: 'shadow-lg' },
+  ],
 });
 
-// Usage
-<StyledButton isActive={true}>Click me</StyledButton>
+// Variant props are fully typed:
+<Button intent="primary" size="lg">Save</Button>
+<Button intent="danger">Delete</Button>
 ```
 
-### Using Dynamic Classes
-
-Dynamic classes allow you to apply styles based on component props. This is particularly useful for managing component states and variants:
-
-```tsx
-interface DynamicButtonProps {
-  isActive?: boolean;
-  disabled?: boolean;
-  isPressed?: boolean;
-  children: React.ReactNode;
-}
-
-const DynamicButton: React.FC<DynamicButtonProps> = ({ children, ...props }) => (
-  <button {...props}>{children}</button>
-);
-
-const StyledDynamicButton = craft(DynamicButton)({
-  base: 'px-4 py-2 rounded font-medium transition-all',
-  dynamic: {
-    // Base styles based on active state
-    'bg-blue-500 text-white': (props) => !props.isActive,
-    'bg-green-500 text-white': (props) => props.isActive,
-    
-    // Interactive states
-    'hover:opacity-90': (props) => !props.disabled,
-    'active:scale-95': (props) => !props.disabled,
-    
-    // Disabled state
-    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled,
-    
-    // Additional states
-    'shadow-lg': (props) => props.isPressed
-  }
-});
-
-// Usage examples
-<StyledDynamicButton>Default</StyledDynamicButton>
-<StyledDynamicButton isActive>Active</StyledDynamicButton>
-<StyledDynamicButton disabled>Disabled</StyledDynamicButton>
-<StyledDynamicButton isPressed>Pressed</StyledDynamicButton>
-```
-
-### Advanced Example with Multiple Conditions
-
-Here's a more complex example showing how to combine multiple conditions and features:
-
-```tsx
-interface StatusCardProps {
-  status: 'success' | 'error' | 'warning' | 'info';
-  size?: 'small' | 'medium' | 'large';
-  disabled?: boolean;
-  loading?: boolean;
-  children: React.ReactNode;
-}
-
-const StatusCard: React.FC<StatusCardProps> = ({ children, ...props }) => (
-  <div {...props}>{children}</div>
-);
-
-const StyledStatusCard = craft(StatusCard)({
-  base: 'p-4 rounded-lg shadow transition-all',
-  dynamic: {
-    // Status-based styles
-    'bg-green-100 text-green-800 border-green-200': (props) => props.status === 'success',
-    'bg-red-100 text-red-800 border-red-200': (props) => props.status === 'error',
-    'bg-yellow-100 text-yellow-800 border-yellow-200': (props) => props.status === 'warning',
-    'bg-blue-100 text-blue-800 border-blue-200': (props) => props.status === 'info',
-    
-    // Size-based styles
-    'p-2 text-sm': (props) => props.size === 'small',
-    'p-6 text-lg': (props) => props.size === 'large',
-    
-    // State-based styles
-    'opacity-50 cursor-not-allowed': (props) => props.disabled,
-    'animate-pulse': (props) => props.loading
-  },
-  responsive: {
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg'
-  },
-  nested: {
-    '.status-icon': 'mr-2',
-    '.status-title': 'font-bold mb-1',
-    '.status-description': 'text-sm opacity-80'
-  }
-});
-
-// Usage examples
-<StyledStatusCard status="success" size="small">Success</StyledStatusCard>
-<StyledStatusCard status="error" loading>Error</StyledStatusCard>
-<StyledStatusCard status="warning" disabled>Warning</StyledStatusCard>
-<StyledStatusCard status="info" size="large">Info</StyledStatusCard>
-```
-
-### Themed Components
-
-You can also use dynamic classes to create themed components:
-
-```tsx
-interface ThemedButtonProps {
-  theme: 'light' | 'dark';
-  variant: 'default' | 'primary' | 'success' | 'danger';
-  disabled?: boolean;
-  loading?: boolean;
-  children: React.ReactNode;
-}
-
-const ThemedButton: React.FC<ThemedButtonProps> = ({ children, ...props }) => (
-  <button {...props}>{children}</button>
-);
-
-const StyledThemedButton = craft(ThemedButton)({
-  base: 'px-4 py-2 rounded font-medium transition-all',
-  dynamic: {
-    // Light theme variants
-    'bg-gray-100 text-gray-900 border border-gray-300': (props) => 
-      props.theme === 'light' && props.variant === 'default',
-    'bg-blue-100 text-blue-900 border border-blue-300': (props) => 
-      props.theme === 'light' && props.variant === 'primary',
-    'bg-green-100 text-green-900 border border-green-300': (props) => 
-      props.theme === 'light' && props.variant === 'success',
-    'bg-red-100 text-red-900 border border-red-300': (props) => 
-      props.theme === 'light' && props.variant === 'danger',
-    
-    // Dark theme variants
-    'bg-gray-800 text-gray-100 border border-gray-700': (props) => 
-      props.theme === 'dark' && props.variant === 'default',
-    'bg-blue-800 text-blue-100 border border-blue-700': (props) => 
-      props.theme === 'dark' && props.variant === 'primary',
-    'bg-green-800 text-green-100 border border-green-700': (props) => 
-      props.theme === 'dark' && props.variant === 'success',
-    'bg-red-800 text-red-100 border border-red-700': (props) => 
-      props.theme === 'dark' && props.variant === 'danger',
-    
-    // Interactive states
-    'hover:opacity-90': (props) => !props.disabled && !props.loading,
-    'active:scale-95': (props) => !props.disabled && !props.loading,
-    'disabled:opacity-50 disabled:cursor-not-allowed': (props) => props.disabled,
-    'animate-pulse': (props) => props.loading
-  }
-});
-
-// Usage examples
-<StyledThemedButton theme="light" variant="primary">Light Primary</StyledThemedButton>
-<StyledThemedButton theme="dark" variant="success">Dark Success</StyledThemedButton>
-<StyledThemedButton theme="light" variant="danger" disabled>Light Danger Disabled</StyledThemedButton>
-<StyledThemedButton theme="dark" variant="default" loading>Dark Default Loading</StyledThemedButton>
-```
+---
 
 ## API Reference
 
-### `craft(Component)`
+| Function | Alias | Description |
+|---|---|---|
+| `craft` | `styled` | Create a styled React component with full variant support |
+| `stitch` | `nestedStyles` | CSS-like nested selectors for child elements |
+| `tailorFit` | `responsive` | Responsive breakpoint utilities |
+| `embroider` | `interactionStyles` | Hover / focus / active / disabled state styles |
+| `spinThread` | `animation` | Animation class builder |
+| `createElement` | `createComponent` | Low-level React element factory |
 
-Creates a styled version of a React component with Tailwind CSS classes.
+Both the canonical name and its alias are exported — use whichever reads better in your codebase.
 
-#### Configuration
+---
 
-The `craft` function accepts a configuration object with the following properties:
+## Core API
 
-- `base`: Base classes applied to the component
-- `dynamic`: Object mapping class names to functions that receive props and return boolean values
-- `responsive`: Object mapping breakpoint names to class names
-- `nested`: Object mapping selectors to class names for nested elements
-- `animation`: Object mapping animation names to class names
+### `craft(input)(config)` · alias `styled`
 
-## Helper Functions
-
-Tailor provides several helper functions to make styling components easier and more maintainable.
-
-### `spinThread(config: TailwindAnimationConfig)`
-
-Creates animation classes for your components. Perfect for loading states, transitions, and interactive elements.
+The main building block. Accepts any HTML tag string or React component and returns a styled, fully-typed component.
 
 ```tsx
-import { spinThread } from '@dennerrondinely/tailor';
+import { craft } from '@dennerrondinely/tailor';
 
-// Basic usage
-const spinAnimation = spinThread({ type: 'spin' });
-// Result: 'animate-spin'
-
-// Advanced usage with all options
-const customAnimation = spinThread({
-  type: 'pulse',
-  duration: '1000',
-  delay: '200',
-  iteration: 'infinite',
-  direction: 'reverse',
-  timing: 'ease-in-out'
+// From an HTML tag
+const Card = craft('div')({
+  base: 'rounded-xl border bg-white shadow-sm p-6',
 });
-// Result: 'animate-pulse duration-1000 delay-200 infinite reverse ease-in-out'
 
-// Usage in a component
-const LoadingSpinner = craft('div')({
-  base: spinThread({ type: 'spin', duration: '1000' }),
-  // ... other styles
+// From an existing React component
+const StyledCard = craft(Card)({
+  base: 'hover:shadow-md transition-shadow',
 });
 ```
 
-### `stitch(styles: NestedStyles)`
+#### `config` properties
 
-Creates nested styles for child elements within your components using Tailwind's nesting pattern. This allows you to style child elements using Tailwind's modifier syntax, group utilities, and arbitrary selectors.
+| Property | Type | Description |
+|---|---|---|
+| `base` | `string` | Classes always applied |
+| `variants` | `Record<string, Record<string, string>>` | Named variant groups |
+| `defaultVariants` | `Partial<InferVariantProps<V>>` | Fallback variant values |
+| `compoundVariants` | `Array<{ ...keys, className }>` | Classes for specific variant combinations |
+| `dynamic` | `Record<string, (props) => boolean>` | Prop-driven class conditions |
+| `nested` | `NestedStyles` | Child element selectors (see `stitch`) |
+| `responsive` | `ResponsiveConfig` | Breakpoint overrides (see `tailorFit`) |
+| `animation` | `AnimationConfig` | Animation classes (see `spinThread`) |
+
+---
+
+### Variants
+
+```tsx
+import { craft } from '@dennerrondinely/tailor';
+
+const Badge = craft('span')({
+  base: 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
+  variants: {
+    status: {
+      success: 'bg-green-100 text-green-800',
+      warning: 'bg-yellow-100 text-yellow-800',
+      error:   'bg-red-100 text-red-800',
+      info:    'bg-blue-100 text-blue-800',
+    },
+  },
+  defaultVariants: { status: 'info' },
+});
+
+<Badge status="success">Deployed</Badge>
+<Badge status="error">Failed</Badge>
+```
+
+#### Compound Variants
+
+Apply extra classes only when a specific combination of variants is active:
+
+```tsx
+const Button = craft('button')({
+  base: 'rounded font-medium',
+  variants: {
+    intent: { primary: 'bg-blue-500 text-white', outline: 'border border-blue-500 text-blue-500' },
+    size:   { sm: 'px-2 py-1 text-sm', lg: 'px-6 py-3 text-lg' },
+  },
+  compoundVariants: [
+    // Only when intent=primary AND size=lg
+    { intent: 'primary', size: 'lg', className: 'shadow-lg tracking-wide' },
+  ],
+  defaultVariants: { intent: 'primary', size: 'sm' },
+});
+```
+
+---
+
+### Polymorphic `as` Prop
+
+Every `craft` component accepts an `as` prop that changes the rendered element while keeping props typed correctly.
+
+```tsx
+const Button = craft('button')({
+  base: 'rounded px-4 py-2 font-medium bg-blue-500 text-white',
+});
+
+// Renders a <button>
+<Button>Click me</Button>
+
+// Renders an <a> — href, target, rel become available
+<Button as="a" href="/dashboard">Go to dashboard</Button>
+
+// Renders a Next.js Link
+import Link from 'next/link';
+<Button as={Link} href="/about">About</Button>
+```
+
+---
+
+### Dynamic Prop-Driven Classes
+
+For fine-grained control when variants aren't enough:
+
+```tsx
+interface LoaderProps {
+  loading?: boolean;
+  disabled?: boolean;
+}
+
+const Loader = craft('button')<LoaderProps>()({
+  base: 'px-4 py-2 rounded transition-all',
+  dynamic: {
+    'opacity-50 cursor-not-allowed': (p) => !!p.disabled,
+    'animate-pulse':                 (p) => !!p.loading,
+    'bg-blue-500 text-white':        (p) => !p.disabled,
+  },
+});
+```
+
+---
+
+### `stitch(styles)` · alias `nestedStyles`
+
+Generates Tailwind classes for child elements using CSS-like selectors:
+
+| Selector | Example | Matches |
+|---|---|---|
+| HTML tag | `'h1'` | `<h1>` inside the component |
+| Class | `'.icon'` | Elements with `class="icon"` |
+| Attribute | `'[data-active=true]'` | Elements with that data attribute |
+| Direct child | `'> span'` | Immediate `<span>` children only |
+| Descendant | `'p a'` | `<a>` anywhere inside a `<p>` |
 
 ```tsx
 import { stitch } from '@dennerrondinely/tailor';
 
-// Example of styling article content - a common use case
 const Article = craft('article')({
-  base: 'prose prose-lg max-w-3xl mx-auto',
+  base: 'prose max-w-3xl mx-auto',
   nested: stitch({
-    // Basic typography styles
-    'h1': 'font-bold text-3xl mb-4',
-    'h2': 'font-semibold text-2xl mb-3',
-    'h3': 'font-medium text-xl mb-2',
-    'p': 'mb-4 text-gray-700',
-    
-    // Link styles within paragraphs
-    'p > a': 'text-blue-500 hover:text-blue-600 underline',
-    
-    // List styles
-    'ul': 'list-disc list-inside mb-4',
-    'ol': 'list-decimal list-inside mb-4',
-    'li': 'mb-1',
-    
-    // Code blocks
-    'pre': 'bg-gray-100 p-4 rounded-lg mb-4',
-    'code': 'font-mono text-sm',
-    
-    // Blockquotes
-    'blockquote': 'border-l-4 border-gray-300 pl-4 italic my-4',
-    
-    // Images
-    'img': 'rounded-lg my-4',
-    'figcaption': 'text-sm text-gray-500 text-center mt-2',
-    
-    // Tables
-    'table': 'w-full border-collapse mb-4',
-    'th': 'border border-gray-300 bg-gray-100 p-2',
-    'td': 'border border-gray-300 p-2',
-    
-    // Dark mode support
-    'dark': {
-      'p': 'text-gray-300',
-      'blockquote': 'border-gray-600',
-      'pre': 'bg-gray-800',
-      'th': 'border-gray-600 bg-gray-700',
-      'td': 'border-gray-600'
-    }
-  })
+    'h1':         'text-3xl font-bold mb-4',
+    'h2':         'text-2xl font-semibold mb-3',
+    'p':          'mb-4 text-gray-700 leading-relaxed',
+    'p > a':      'text-blue-500 underline hover:text-blue-700',
+    'ul':         'list-disc pl-6 mb-4',
+    'li':         'mb-1',
+    'blockquote': 'border-l-4 border-gray-300 pl-4 italic text-gray-600',
+    'pre':        'bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto',
+    'code':       'font-mono text-sm',
+    '[data-highlighted]': 'bg-yellow-100 rounded px-1',
+  }),
 });
-
-// Usage
-<Article>
-  <h1>Getting Started with Tailwind CSS</h1>
-  <p>
-    Tailwind CSS is a utility-first CSS framework that allows you to build custom designs
-    without ever leaving your HTML. <a href="#">Learn more about Tailwind</a>.
-  </p>
-  <h2>Key Features</h2>
-  <ul>
-    <li>Utility-first approach</li>
-    <li>Responsive design</li>
-    <li>Customizable</li>
-  </ul>
-  <blockquote>
-    "Tailwind CSS is the only framework that I've seen scale on large teams."
-  </blockquote>
-  <pre>
-    <code>npm install tailwindcss</code>
-  </pre>
-</Article>
-
-// Example with SVG icon component using arbitrary selectors
-const IconButton = craft('button')({
-  base: 'p-2 rounded-full transition-colors',
-  nested: stitch({
-    // Using arbitrary selectors to target SVG elements
-    'svg': {
-      base: 'w-6 h-6',
-      // Target specific SVG elements using [&_selector]
-      'hover:[&_path]:fill-white': true,
-      'hover:[&_circle]:fill-black': true,
-      'hover:[&_circle]:stroke-black': true,
-      // You can also use group modifiers
-      'group-hover:[&_path]:fill-blue-500': true,
-      'group-focus:[&_rect]:stroke-2': true
-    }
-  })
-});
-
-// Example with a more complex component using various nesting patterns
-const SocialButton = craft('button')({
-  base: 'p-3 rounded-lg transition-all group',
-  nested: stitch({
-    // Base styles for the icon container
-    '.icon-wrapper': 'relative inline-block',
-    
-    // SVG specific styles with arbitrary selectors
-    'svg': {
-      base: 'w-6 h-6',
-      // Target multiple elements
-      'hover:[&_path]:fill-white': true,
-      'hover:[&_circle]:fill-black': true,
-      'hover:[&_rect]:stroke-2': true,
-      // Use with other modifiers
-      'dark:[&_path]:fill-gray-200': true,
-      'dark:hover:[&_path]:fill-white': true,
-      // Complex selectors
-      'hover:[&_.icon-path]:fill-blue-500': true,
-      'hover:[&_.icon-circle]:stroke-blue-500': true
-    },
-    
-    // Text styles with hover effects
-    '.button-text': {
-      base: 'ml-2 text-sm font-medium',
-      'group-hover:text-white': true,
-      'dark:text-gray-200': true
-    },
-    
-    // Background effects
-    '&': {
-      base: 'bg-gray-100',
-      'hover:bg-blue-500': true,
-      'dark:bg-gray-800': true,
-      'dark:hover:bg-blue-600': true
-    }
-  })
-});
-
-// Usage examples
-<IconButton>
-  <svg viewBox="0 0 24 24">
-    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-    <circle cx="12" cy="12" r="3"/>
-  </svg>
-</IconButton>
-
-<SocialButton>
-  <div className="icon-wrapper">
-    <svg viewBox="0 0 24 24">
-      <path className="icon-path" d="M12 2L2 7l10 5 10-5-10-5z"/>
-      <circle className="icon-circle" cx="12" cy="12" r="3"/>
-    </svg>
-  </div>
-  <span className="button-text">Follow</span>
-</SocialButton>
 ```
 
-The `stitch` helper supports all Tailwind CSS nesting features:
+---
 
-- Direct child selectors using `>`
-- Group modifiers using `group-*`
-- State variants (hover, focus, active, etc.)
-- Responsive modifiers (sm, md, lg, xl, 2xl)
-- Dark mode using `dark:`
-- Custom modifiers
-- Arbitrary selectors using `[&_selector]` syntax
-- Multiple modifiers can be combined
+### `tailorFit(config)` · alias `responsive`
 
-This makes it easy to create complex component styles while maintaining Tailwind's utility-first approach and keeping your styles organized and maintainable. Common use cases include:
-
-- Styling article/blog content
-- Creating consistent typography systems
-- Styling SVG elements
-- Targeting specific elements within complex components
-- Creating custom hover/focus states for nested elements
-- Applying styles to elements based on parent state
-
-### `tailorFit(config: ResponsiveConfig)`
-
-Creates responsive styles that adapt to different screen sizes.
+Generates responsive breakpoint classes:
 
 ```tsx
 import { tailorFit } from '@dennerrondinely/tailor';
 
-// Create responsive styles
-const responsiveStyles = tailorFit({
-  sm: 'text-sm p-2',
-  md: 'text-base p-4',
-  lg: 'text-lg p-6',
-  xl: 'text-xl p-8',
-  '2xl': 'text-2xl p-10'
-});
-
-// Usage in a component
-const ResponsiveContainer = craft('div')({
-  base: 'bg-white rounded',
-  responsive: responsiveStyles
+const Container = craft('div')({
+  base: 'mx-auto',
+  responsive: tailorFit({
+    sm:    'max-w-sm px-4',
+    md:    'max-w-md px-6',
+    lg:    'max-w-4xl px-8',
+    xl:    'max-w-6xl',
+    '2xl': 'max-w-7xl',
+  }),
 });
 ```
 
-### `embroider(config: EmbroiderConfig)`
+Or inline in `craft`:
 
-Creates interactive state styles (hover, active, focus, disabled) for your components.
+```tsx
+const Grid = craft('div')({
+  base: 'grid gap-4',
+  responsive: {
+    sm: 'grid-cols-1',
+    md: 'grid-cols-2',
+    lg: 'grid-cols-3',
+  },
+});
+```
+
+---
+
+### `embroider(config)` · alias `interactionStyles`
+
+Groups interaction state classes into a single readable object:
 
 ```tsx
 import { embroider } from '@dennerrondinely/tailor';
 
-// Create interactive styles
-const interactiveStyles = embroider({
-  base: 'px-4 py-2 rounded transition-colors',
-  hover: 'hover:bg-blue-600',
-  active: 'active:bg-blue-700',
-  focus: 'focus:ring-2 focus:ring-blue-500 focus:outline-none',
-  disabled: 'disabled:opacity-50 disabled:cursor-not-allowed'
+const buttonStates = embroider({
+  base:     'transition-colors duration-150',
+  hover:    'hover:bg-blue-600',
+  active:   'active:bg-blue-700 active:scale-95',
+  focus:    'focus:ring-2 focus:ring-blue-400 focus:outline-none',
+  disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
 });
 
-// Usage in a component
-const InteractiveButton = craft('button')({
-  ...interactiveStyles,
-  base: 'bg-blue-500 text-white'
+const Button = craft('button')({
+  base: `bg-blue-500 text-white px-4 py-2 rounded ${buttonStates}`,
 });
 ```
 
-## 🎯 TypeScript Support
+---
 
-The library is fully typed and provides autocompletion for all available properties.
+### `spinThread(config)` · alias `animation`
 
-## 🤝 Contributing
+Builds animation class strings from a structured config:
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```tsx
+import { spinThread } from '@dennerrondinely/tailor';
+
+// Simple
+const spin  = spinThread({ type: 'spin' });   // 'animate-spin'
+const pulse = spinThread({ type: 'pulse' });  // 'animate-pulse'
+
+// Full control
+const bounce = spinThread({
+  type:      'bounce',
+  duration:  '700',
+  delay:     '150',
+  iteration: 'infinite',
+  direction: 'alternate',
+  timing:    'ease-in-out',
+});
+
+const Spinner = craft('div')({
+  base: `w-6 h-6 rounded-full border-2 border-blue-500 border-t-transparent ${spin}`,
+});
+```
+
+---
+
+## Export Aliases
+
+Every helper ships with a plain-English alias for teams that prefer descriptive imports:
+
+```tsx
+import {
+  styled,            // craft
+  nestedStyles,      // stitch
+  responsive,        // tailorFit
+  interactionStyles, // embroider
+  animation,         // spinThread
+  createComponent,   // createElement
+} from '@dennerrondinely/tailor';
+```
+
+---
+
+## TypeScript
+
+### Infer Variant Props
+
+```tsx
+import { craft, InferVariantProps } from '@dennerrondinely/tailor';
+
+const buttonVariants = {
+  intent: { primary: '...', secondary: '...' },
+  size:   { sm: '...', md: '...', lg: '...' },
+} as const;
+
+const Button = craft('button')({ base: '...', variants: buttonVariants });
+
+// Inferred: { intent?: 'primary' | 'secondary'; size?: 'sm' | 'md' | 'lg' }
+type ButtonVariants = InferVariantProps<typeof buttonVariants>;
+```
+
+### Polymorphic Component Types
+
+```tsx
+import { PolymorphicProps, TailorComponent } from '@dennerrondinely/tailor';
+
+// PolymorphicProps<C, OwnProps> merges element props + own props, resolves conflicts
+type ButtonAsAnchor = PolymorphicProps<'a', { intent?: 'primary' | 'secondary' }>;
+```
+
+### Extending a `craft` Component
+
+```tsx
+const Base = craft('div')({ base: 'p-4 rounded' });
+
+// Wrap the already-styled component to layer more classes
+const Card = craft(Base)({ base: 'shadow-md bg-white' });
+```
+
+---
+
+## Examples
+
+### Card with variants
+
+```tsx
+const Card = craft('div')({
+  base: 'rounded-xl p-6 transition-shadow',
+  variants: {
+    elevation: {
+      flat:     'border border-gray-200',
+      raised:   'shadow-md',
+      floating: 'shadow-xl',
+    },
+    intent: {
+      default: 'bg-white',
+      muted:   'bg-gray-50',
+      accent:  'bg-blue-50 border border-blue-100',
+    },
+  },
+  defaultVariants: { elevation: 'raised', intent: 'default' },
+});
+
+<Card elevation="floating" intent="accent">Featured</Card>
+```
+
+### Navigation with active state
+
+```tsx
+const NavLink = craft('a')({
+  base: 'px-3 py-2 rounded text-sm font-medium transition-colors',
+  variants: {
+    active: {
+      true:  'bg-gray-900 text-white',
+      false: 'text-gray-300 hover:bg-gray-700 hover:text-white',
+    },
+  },
+  defaultVariants: { active: 'false' },
+});
+
+<NavLink href="/home" active="true">Home</NavLink>
+<NavLink href="/about">About</NavLink>
+```
+
+### Polymorphic card (renders as `<article>`)
+
+```tsx
+const Card = craft('div')({
+  base: 'rounded-xl bg-white shadow-sm p-6',
+});
+
+<Card as="article">
+  <h2>Post Title</h2>
+  <p>Content here.</p>
+</Card>
+```
+
+---
+
+## Contributing
+
+Contributions are welcome!
+
+```bash
+# Clone and install
+git clone https://github.com/dennerrondinely/tailor.git
+cd tailor
+pnpm install
+
+# Run tests
+pnpm test
+
+# Build
+pnpm build
+```
+
+### Creating a changeset
+
+This project uses [Changesets](https://github.com/changesets/changesets) for versioning:
+
+```bash
+pnpm changeset   # describe your change
+pnpm version     # bump versions + update CHANGELOG.md
+pnpm release     # build + publish to npm
+```
+
+---
 
 <div align="center" style="margin: 60px 0; padding: 40px; background: linear-gradient(to right, #f3f4f6, #e5e7eb, #f3f4f6); border-radius: 16px;">
-  <img src="images/icon.png" alt="Tailor" height="150" style="filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));"/>
+  <img src="images/icon.png" alt="Tailor" height="100" style="filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));"/>
   <br/>
-  <p style="margin-top: 20px; font-size: 1.2em; color: #374151;">Crafted with ❤️ for React developers</p>
+  <p style="margin-top: 20px; font-size: 1.1em; color: #374151;">Crafted with love for React developers</p>
 </div>
 
-## 📄 License
+## License
 
-MIT 
+MIT &copy; [Denner Rondinely](https://github.com/dennerrondinely)
