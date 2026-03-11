@@ -12,14 +12,13 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # to create GitHub releases and push version commits
-      pull-requests: write  # to create the "Version Packages" PR
+      contents: write
+      id-token: write   # required for npm provenance
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Fetch full history so changesets can diff correctly
           fetch-depth: 0
 
       - name: Setup pnpm
@@ -32,7 +31,6 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          # Configures the npm registry and injects NODE_AUTH_TOKEN automatically
           registry-url: https://registry.npmjs.org/
 
       - name: Install dependencies
@@ -45,20 +43,26 @@ jobs:
         run: pnpm test --no-coverage
 
       # -----------------------------------------------------------------------
-      # Changesets action:
-      #   - If there are pending changesets → opens / updates a "Version
-      #     Packages" PR that bumps versions and updates CHANGELOG.md.
-      #   - If the "Version Packages" PR is merged → publishes to npm.
+      # If there are pending changesets:
+      #   1. bump version in package.json
+      #   2. update CHANGELOG.md
+      #   3. commit + tag
+      #   4. publish to npm
+      # If there are no pending changesets, this step is a no-op.
       # -----------------------------------------------------------------------
-      - name: Create Release PR or Publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: pnpm release
-          title: "chore: version packages"
-          commit: "chore: version packages"
+      - name: Version & Publish
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          pnpm changeset version
+          pnpm release
+          git add -A
+          # Only commit+push if package.json was actually changed by changeset version
+          if ! git diff --cached --quiet; then
+            VERSION=$(node -p "require('./package.json').version")
+            git commit -m "chore: release v${VERSION}"
+            git push
+          fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Set in repo Settings → Secrets → Actions → NPM_TOKEN
-          # Generate at https://www.npmjs.com/settings/<user>/tokens (Automation token)
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
