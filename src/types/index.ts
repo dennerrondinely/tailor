@@ -4,6 +4,26 @@ export type StyleObject = {
   [key: string]: string;
 };
 
+/**
+ * Maps CSS-like selectors to Tailwind class strings.
+ *
+ * Supported selector patterns:
+ * - HTML tag:             `'h1'`, `'p'`, `'a'`
+ * - CSS class:            `'.icon'`, `'.btn-label'`
+ * - Data attribute:       `'[data-slot=icon]'`, `'[data-active]'`
+ * - Direct child (`>`):   `'p>a'`, `'ul > li'`
+ * - Descendant (space):   `'ul li'`, `'article p'`
+ * - Combinations:         `'ul > li.active'`, `'div [data-slot=icon]'`
+ *
+ * @example
+ * stitch({
+ *   'h1':                'text-2xl font-bold',
+ *   'p>a':               'text-blue-500 underline',
+ *   '.icon':             'w-5 h-5',
+ *   '[data-slot=icon]':  'text-primary',
+ *   'ul li':             'mb-1',
+ * })
+ */
 export type NestedStyles = {
   [selector: string]: string;
 };

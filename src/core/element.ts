@@ -1,7 +1,8 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
-import { TailorProps, ReactElementWithProps, ElementConfig } from '../types';
+import { TailorProps, ElementConfig } from '../types';
 import { buildClassName } from './utils/classes';
+import { applyNestedStyles } from './utils/nested';
 
 type ElementInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
 
@@ -26,41 +27,13 @@ export function createElement(input: ElementInput) {
       const finalClassName = twMerge(generatedClassName, dynamicClasses, className);
 
       if (config.nested && children) {
-        const styledChildren = React.Children.map(children, child => {
-          if (!React.isValidElement(child)) return child;
-
-          const tagName = (child.type as any)?.displayName || child.type;
-          const nestedStyle = config.nested?.[tagName];
-          const nestedSelectorStyle = config.nested 
-            ? Object.entries(config.nested)
-                .filter(([selector]) => selector.includes('>'))
-                .find(([selector]) => {
-                  const [parent, child] = selector.split('>');
-                  return parent.trim() === tagName;
-                })
-            : undefined;
-
-          if (nestedStyle || nestedSelectorStyle) {
-            const childElement = child as ReactElementWithProps;
-            const childClassName = twMerge(
-              childElement.props.className || '',
-              nestedStyle || nestedSelectorStyle?.[1] || ''
-            );
-
-            return React.cloneElement(childElement, {
-              ...childElement.props,
-              className: childClassName
-            });
-          }
-
-          return child;
-        });
+        const styledChildren = applyNestedStyles(children, config.nested);
 
         return React.createElement(input, {
           ...rest,
           className: finalClassName,
           ref,
-          children: styledChildren
+          children: styledChildren,
         });
       }
 
