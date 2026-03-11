@@ -102,8 +102,23 @@ export function craft<TProps = Record<string, unknown>>(
       if (disabled) elementConfig.disabled = disabled;
     }
 
-    return createElement(input)(elementConfig) as unknown as React.FC<
+    const component = createElement(input)(elementConfig) as unknown as React.FC<
       TProps & InferVariantProps<V>
     >;
+
+    // Propagate the display name so the component keeps its identity
+    // even when assigned to a variable with a different name.
+    // e.g. craft('button')({...}) → displayName: 'Tailor(Button)'
+    // e.g. craft(MyCard)({...})   → displayName: 'Tailor(MyCard)'
+    const baseName =
+      typeof input === 'string'
+        ? input.charAt(0).toUpperCase() + input.slice(1)
+        : (input as React.ComponentType<any>).displayName
+          ?? (input as React.ComponentType<any>).name
+          ?? 'Component';
+
+    (component as any).displayName = `Tailor(${baseName})`;
+
+    return component;
   };
 }

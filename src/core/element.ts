@@ -8,13 +8,40 @@ import { resolveVariants } from './utils/variants';
 type ElementInput = keyof JSX.IntrinsicElements | React.ComponentType<any>;
 
 /**
+ * Derives a human-readable display name from the element input.
+ *
+ * - HTML tag string → capitalised: `'button'` → `'Button'`
+ * - React component  → uses `displayName` or `name`: `MyCard` → `'MyCard'`
+ *
+ * The result is wrapped as `Tailor(Name)` so it is easy to spot in
+ * React DevTools and error stack traces.
+ *
+ * @internal
+ */
+function deriveDisplayName(input: ElementInput): string {
+  if (typeof input === 'string') {
+    // Capitalise the HTML tag: 'button' → 'Button'
+    return input.charAt(0).toUpperCase() + input.slice(1);
+  }
+  // React component: prefer displayName, fall back to function name
+  return (input as React.ComponentType<any>).displayName
+    ?? (input as React.ComponentType<any>).name
+    ?? 'Component';
+}
+
+/**
  * Creates a styled React component for a given tag or component and configuration.
- * @param input - The HTML tag or React component to render.
- * @returns A function that takes an ElementConfig and returns a React component.
+ *
+ * The returned component automatically receives a `displayName` of the form
+ * `Tailor(InputName)`, making it easy to identify in React DevTools.
+ *
+ * @param input - The HTML tag string or React component to wrap.
+ * @returns A function that accepts an {@link ElementConfig} and returns a
+ *   `React.ForwardRefExoticComponent` with the derived display name.
  */
 export function createElement(input: ElementInput) {
   return (config: ElementConfig = {}) => {
-    return React.forwardRef<any, TailorProps>((props, ref) => {
+    const component = React.forwardRef<any, TailorProps>((props, ref) => {
       const { className, children, ...rest } = props;
 
       // Dynamic classes
@@ -53,14 +80,20 @@ export function createElement(input: ElementInput) {
         children
       });
     });
+
+    component.displayName = `Tailor(${deriveDisplayName(input)})`;
+    return component;
   };
 }
 
 /**
  * Creates a styled React component with a default configuration.
- * @param input - The HTML tag or React component to render.
- * @param defaultConfig - The default ElementConfig to use.
- * @returns A React component with the default styles applied.
+ *
+ * Shorthand for `createElement(input)(defaultConfig)`.
+ *
+ * @param input - The HTML tag string or React component to wrap.
+ * @param defaultConfig - The {@link ElementConfig} to apply by default.
+ * @returns A styled `React.ForwardRefExoticComponent`.
  */
 export function createStyledElement(input: ElementInput, defaultConfig: ElementConfig = {}) {
   return createElement(input)(defaultConfig);
